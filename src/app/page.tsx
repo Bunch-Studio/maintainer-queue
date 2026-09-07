@@ -45,12 +45,12 @@ export default async function Board() {
           <ul className="divide-y divide-hairline border-y border-hairline">
             {tasks.map((t) => (
               <li key={t.id}>
-                <Link href={`/tasks/${t.id}`} className="grid grid-cols-[1fr_auto] gap-4 py-4 hover:bg-surface -mx-3 px-3 rounded-sm">
+                <Link href={`/tasks/${t.id}`} className="grid sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 py-4 hover:bg-surface -mx-3 px-3 rounded-sm">
                   <div className="min-w-0">
                     <div className="font-mono text-xs text-ink-2 mb-1">{repoName(t.repos)} #{t.github_issue_number}</div>
-                    <div className="font-medium truncate">{t.title}</div>
+                    <div className="font-medium">{t.title}</div>
                   </div>
-                  <div className="flex flex-col items-end gap-1 font-mono text-xs text-ink-2 tabular-nums">
+                  <div className="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-1 font-mono text-xs text-ink-2 tabular-nums whitespace-nowrap">
                     <StatusDot status={t.status} />
                     <span>≤ {t.max_diff_lines} lines{t.requires_screenshot ? " · screenshot" : ""}</span>
                   </div>
