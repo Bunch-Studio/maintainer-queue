@@ -4,11 +4,12 @@ import { useActionState } from "react";
 import { createTask } from "@/app/dashboard/actions";
 
 type Repo = { id: string; full_name: string };
+type State = { error?: string; ok?: boolean };
 
-const submit = async (_prev: { error?: string; ok?: boolean }, formData: FormData) => createTask(formData);
+const submit = async (_prev: State, formData: FormData): Promise<State> => createTask(formData);
 
 export const TaskForm = ({ repos }: { repos: Repo[] }) => {
-  const [state, action, pending] = useActionState(submit, {});
+  const [state, action, pending] = useActionState<State, FormData>(submit, {});
   const field = "w-full h-10 px-3 rounded-md border border-hairline bg-surface text-sm disabled:opacity-60";
 
   return (
@@ -55,7 +56,7 @@ export const TaskForm = ({ repos }: { repos: Repo[] }) => {
       </label>
 
       {state.error && <p role="alert" className="text-sm text-danger">{state.error}</p>}
-      {state.ok && <p role="status" className="text-sm text-accent">Task posted. It's on the board now.</p>}
+      {state.ok && <p role="status" className="text-sm text-accent">Task posted. It is on the board now.</p>}
 
       <button
         type="submit"
