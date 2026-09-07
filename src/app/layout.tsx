@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-1 w-full max-w-5xl mx-auto px-6 py-10">{children}</main>
         <footer className="border-t border-hairline">
           <div className="max-w-5xl mx-auto px-6 py-6 font-mono text-xs text-ink-2 flex flex-wrap gap-4 justify-between">
-            <span>{name} · free for open source</span>
+            <span>{name} · free for open source · made by Bunch in Istanbul</span>
             <span>Identity and permissions come from GitHub. We store no passwords and no code.</span>
           </div>
         </footer>

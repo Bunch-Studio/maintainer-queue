@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signInWithGitHub, signOut } from "@/app/auth/actions";
+import { Logo } from "@/components/logo";
 
 const name = process.env.NEXT_PUBLIC_SITE_NAME ?? "Maintainer Queue";
 
@@ -12,7 +13,10 @@ export const Nav = async () => {
   return (
     <header className="sticky top-0 z-20 border-b border-hairline bg-ground/80 backdrop-blur-md supports-[backdrop-filter]:bg-ground/70">
       <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
-        <Link href="/" className="font-display font-bold text-lg tracking-tight whitespace-nowrap shrink-0">{name}</Link>
+        <Link href="/" className="flex items-center gap-2.5 font-display font-bold text-lg tracking-tight whitespace-nowrap shrink-0">
+          <Logo />
+          {name}
+        </Link>
         <nav className="flex items-center gap-4 sm:gap-6 text-sm whitespace-nowrap">
           <Link href="/board" className="text-ink-2 hover:text-ink">Board</Link>
           <Link href="/how" className="text-ink-2 hover:text-ink hidden sm:inline">How it works</Link>

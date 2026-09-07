@@ -33,15 +33,15 @@ export const GateDemo = () => {
       <form className="space-y-5 font-mono text-xs" onSubmit={(e) => e.preventDefault()} aria-label="Adjust a pretend pull request">
         <label className="block">
           <span className="flex justify-between text-ink-2"><span>Diff size</span><span className="tabular-nums text-ink">{diff} lines</span></span>
-          <input type="range" min={0} max={400} value={diff} onChange={(e) => setDiff(Number(e.target.value))} className="mt-2 w-full accent-accent" />
+          <input type="range" min={0} max={400} value={diff} onChange={(e) => setDiff(Number(e.target.value))} className="range mt-2 w-full" />
         </label>
         <label className="block">
           <span className="flex justify-between text-ink-2"><span>Task limit set by the maintainer</span><span className="tabular-nums text-ink">{limit} lines</span></span>
-          <input type="range" min={10} max={400} step={10} value={limit} onChange={(e) => setLimit(Number(e.target.value))} className="mt-2 w-full accent-accent" />
+          <input type="range" min={10} max={400} step={10} value={limit} onChange={(e) => setLimit(Number(e.target.value))} className="range mt-2 w-full" />
         </label>
         <label className="block">
           <span className="flex justify-between text-ink-2"><span>PR description</span><span className="tabular-nums text-ink">{words} words</span></span>
-          <input type="range" min={0} max={600} step={5} value={words} onChange={(e) => setWords(Number(e.target.value))} className="mt-2 w-full accent-accent" />
+          <input type="range" min={0} max={600} step={5} value={words} onChange={(e) => setWords(Number(e.target.value))} className="range mt-2 w-full" />
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="flex items-center gap-2 text-ink-2">
@@ -65,7 +65,7 @@ export const GateDemo = () => {
 
       <div className="self-start rounded-lg border border-hairline bg-surface font-mono text-[13px] shadow-[0_1px_0_var(--hairline),0_24px_48px_-32px_rgba(0,0,0,0.45)]" role="status" aria-live="polite">
         <div className="flex items-baseline justify-between gap-4 border-b border-hairline px-4 py-3">
-          <span className="font-medium">fix: trim the name in greet</span>
+          <span className="flex items-center gap-2.5 font-medium"><span aria-hidden className="live-dot inline-block size-2 rounded-full bg-accent" />fix: trim the name in greet</span>
           <span className="text-ink-2 tabular-nums">+{Math.ceil(diff * 0.6)} −{Math.floor(diff * 0.4)}</span>
         </div>
         <ul>
