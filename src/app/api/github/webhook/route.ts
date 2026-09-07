@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getGitHubApp } from "@/lib/github/app";
+import { getGitHubApp, getInstallationOctokit } from "@/lib/github/app";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { recordMerge, runGate } from "@/lib/gate";
 
@@ -60,6 +60,18 @@ export const POST = async (request: NextRequest) => {
       await runGate(repoId, body.pull_request);
     } else if (body.action === "closed" && body.pull_request.merged) {
       await recordMerge(repoId, body.pull_request);
+    }
+  }
+
+  // CI finished: re-evaluate every open task PR on that commit so "waiting on CI" resolves.
+  if (event === "check_suite" && body.action === "completed") {
+    const repoId = body.repository.id as number;
+    for (const pr of body.check_suite.pull_requests ?? []) {
+      const { data: repo } = await createServiceRoleClient().from("repos").select("installation_id, owner, name").eq("github_repo_id", repoId).maybeSingle();
+      if (!repo) break;
+      const octokit = await getInstallationOctokit(repo.installation_id);
+      const { data: full } = await octokit.request("GET /repos/{owner}/{repo}/pulls/{pull_number}", { owner: repo.owner, repo: repo.name, pull_number: pr.number });
+      await runGate(repoId, full);
     }
   }
 
