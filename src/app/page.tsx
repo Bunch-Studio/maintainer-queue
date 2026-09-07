@@ -17,7 +17,8 @@ type Row = {
 
 const repoName = (r: Row["repos"]) => (Array.isArray(r) ? r[0]?.full_name : r?.full_name) ?? "";
 
-export default async function Board() {
+export default async function Board({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
   const supabase = await createClient();
   const { data } = await supabase
     .from("tasks")
@@ -30,6 +31,11 @@ export default async function Board() {
 
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
+      {error && (
+        <p role="alert" className="lg:col-span-2 border border-danger/40 bg-danger-soft text-ink rounded-md px-4 py-3 text-sm">
+          <span className="font-medium">Sign-in failed:</span> {error}
+        </p>
+      )}
       <section>
         <h1 className="text-3xl font-bold tracking-tight mb-2">Tasks maintainers want done.</h1>
         <p className="text-ink-2 max-w-prose mb-8">
