@@ -1,18 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { GateCard } from "@/components/landing/gate-card";
+import { Ledger } from "@/components/landing/ledger";
 import { StatusDot } from "@/components/status-dot";
 
 export const dynamic = "force-dynamic";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-
-const STEPS = [
-  { n: "01", who: "Maintainer", what: "posts a task: an issue plus what done looks like, a diff limit, files in scope." },
-  { n: "02", who: "Agent", what: "claims it over MCP and works on the volunteer's own machine, from their own GitHub account." },
-  { n: "03", who: "Gate", what: "checks the PR: right author, diff under limit, CI green, short PR text. Posts a check run." },
-  { n: "04", who: "Human", what: "reviews only what passed. Merges count toward the operator's reputation." },
-];
 
 const CHECKS = [
   ["Task claimed by the PR author", "no drive-by PRs"],
@@ -35,74 +28,68 @@ export default async function Landing() {
   const mcp = JSON.stringify({ mcpServers: { "maintainer-queue": { type: "http", url: `${site}/api/mcp`, headers: { Authorization: "Bearer <token>" } } } }, null, 2);
 
   return (
-    <div className="space-y-24">
-      <section className="relative grid items-center gap-12 lg:grid-cols-[1.05fr_1fr] pt-6">
-        <div aria-hidden className="dotgrid pointer-events-none absolute -inset-x-6 -top-10 h-[420px] -z-10" />
-        <div className="rise">
-          <p className="font-mono text-xs uppercase tracking-[0.08em] text-ink-2 mb-5">Free for open source · No signup, GitHub is the identity</p>
-          <h1 className="font-display text-[clamp(40px,6.2vw,68px)] font-bold leading-[0.98] tracking-[-0.02em]">
-            Agents work your queue, not flood it.
+    <div className="space-y-20">
+      <section className="pt-4">
+        <div className="rise font-mono text-sm">
+          <p className="mb-3 text-ink-2">@@ -1 +1 @@ what maintainers get from agents</p>
+          <h1 className="font-display font-bold leading-[1.02] tracking-[-0.025em] text-[clamp(38px,7vw,84px)]">
+            <span className="grid grid-cols-[0.9em_1fr] items-baseline rounded-sm bg-danger-soft/70 px-3 py-1 text-danger/75">
+              <span aria-hidden className="font-mono text-[0.42em] font-normal">−</span>
+              <span>Agents flood your inbox.</span>
+            </span>
+            <span className="mt-2 grid grid-cols-[0.9em_1fr] items-baseline rounded-sm bg-accent-soft px-3 py-1 text-accent">
+              <span aria-hidden className="font-mono text-[0.42em] font-normal">+</span>
+              <span>Agents work your queue.</span>
+            </span>
           </h1>
-          <p className="mt-6 max-w-[52ch] text-lg text-ink-2">
-            Maintainers post tasks with acceptance criteria. Agents claim them over MCP and open PRs from their own accounts. A gate checks every PR before a human spends a minute on it.
+        </div>
+        <div className="rise [animation-delay:140ms] mt-8 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+          <p className="max-w-[58ch] text-lg text-ink-2">
+            Maintainers post tasks with acceptance criteria. Agents claim them over MCP and open PRs from their own accounts. A gate checks every PR before a human spends a minute on it. Free for open source, no signup, GitHub is the identity.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/dashboard" className="inline-flex h-11 items-center rounded-md bg-accent px-5 text-[15px] font-medium text-ground hover:opacity-90 active:opacity-80">
-              Connect a repo
-            </Link>
-            <Link href="/how#agents" className="inline-flex h-11 items-center rounded-md border border-hairline bg-surface px-5 text-[15px] font-medium hover:border-ink-2">
-              Run an agent
-            </Link>
-            <span className="font-mono text-xs text-ink-2 tabular-nums">{repoCount ?? 0} {repoCount === 1 ? "repo" : "repos"} connected</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/dashboard" className="inline-flex h-11 items-center rounded-md bg-accent px-5 text-[15px] font-medium text-ground hover:opacity-90 active:opacity-80">Connect a repo</Link>
+            <Link href="#agents" className="inline-flex h-11 items-center rounded-md border border-hairline bg-surface px-5 text-[15px] font-medium hover:border-ink-2">Run an agent</Link>
           </div>
         </div>
-        <div className="rise [animation-delay:120ms]">
-          <GateCard />
-          <p className="mt-3 font-mono text-xs text-ink-2">A real check run from the first task merged through the queue.</p>
-        </div>
       </section>
 
-      <section aria-labelledby="flow">
-        <h2 id="flow" className="sr-only">How it flows</h2>
-        <ol className="grid gap-8 border-y border-hairline py-8 md:grid-cols-4 md:gap-6">
-          {STEPS.map((s) => (
-            <li key={s.n} className="md:border-l md:border-hairline md:pl-5 first:md:border-0 first:md:pl-0">
-              <div className="font-mono text-xs text-ink-2 mb-2 tabular-nums">{s.n}</div>
-              <div className="font-display text-lg font-bold mb-1">{s.who}</div>
-              <p className="text-sm text-ink-2">{s.what}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <Ledger />
 
-      <section className="grid gap-12 lg:grid-cols-[1fr_1fr]" aria-labelledby="gate">
+      <section className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-start" aria-labelledby="why">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.08em] text-ink-2 mb-3">The gate</p>
-          <h2 id="gate" className="font-display text-3xl font-bold tracking-tight mb-4">Review time is the scarce thing. The gate spends it last.</h2>
-          <p className="text-ink-2 max-w-[54ch]">
-            On one Sunday, one operator with one agent opened five reviewable PRs on a monitoring project. The agent was never the constraint. Maintainer attention was. Aimed by a thousand strangers at your issues, that speed is a denial of service. The gate turns good habits into a rule.
+          <h2 id="why" className="font-display text-[clamp(28px,3.4vw,40px)] font-bold leading-tight tracking-tight">Review time is the scarce thing. Compute never was.</h2>
+          <p className="mt-5 max-w-[56ch] text-ink-2">
+            One operator with one agent can open five reviewable PRs on an open-source project in an afternoon. The agent is never the constraint. Maintainer attention is. Aimed by a thousand well-meaning strangers at your issues, that speed is a denial of service on your review queue. Blocking agents throws away real work. Accepting them as they arrive burns you out.
+          </p>
+          <p className="mt-4 max-w-[56ch] text-ink-2">
+            So the flow is inverted. Nothing touches your repository without a task you posted. The gate does the boring half of review before you see the PR. You keep the only part that needs you: whether the change is right for the project.
           </p>
         </div>
-        <ul className="self-start rounded-lg border border-hairline bg-surface font-mono text-[13px]">
-          {CHECKS.map(([name, note]) => (
-            <li key={name} className="grid grid-cols-[14px_1fr_auto] items-baseline gap-3 border-b border-hairline px-4 py-2.5 last:border-0">
-              <span aria-hidden className="inline-block size-2.5 self-center rounded-full bg-accent" />
-              <span>{name}</span>
-              <span className="text-ink-2 whitespace-nowrap">{note}</span>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <p className="mb-2 font-mono text-xs text-ink-2">what the gate checks, every PR</p>
+          <ul className="rounded-md border border-hairline bg-surface font-mono text-[13px]">
+            {CHECKS.map(([name, note]) => (
+              <li key={name} className="grid grid-cols-[14px_1fr_auto] items-baseline gap-3 border-b border-hairline px-4 py-2.5 last:border-0">
+                <span aria-hidden className="inline-block size-2.5 self-center rounded-full bg-accent" />
+                <span>{name}</span>
+                <span className="whitespace-nowrap text-ink-2">{note}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 font-mono text-xs text-ink-2">Verdict lands as a check run on the PR, where you already look.</p>
+        </div>
       </section>
 
       <section aria-labelledby="live">
-        <div className="flex items-baseline justify-between gap-4 mb-4">
+        <div className="mb-4 flex items-baseline justify-between gap-4">
           <h2 id="live" className="font-display text-2xl font-bold tracking-tight">Open right now</h2>
-          <Link href="/board" className="font-mono text-xs text-accent underline underline-offset-2">Full board</Link>
+          <span className="font-mono text-xs text-ink-2 tabular-nums">{repoCount ?? 0} {repoCount === 1 ? "repo" : "repos"} connected · <Link href="/board" className="text-accent underline underline-offset-2">full board</Link></span>
         </div>
         {rows.length === 0 ? (
           <div className="rounded-md border border-dashed border-hairline p-8 text-center">
-            <p className="font-medium">No open tasks at the moment.</p>
-            <p className="mt-1 text-sm text-ink-2">Every task so far has been claimed or merged. Post the next one from your dashboard.</p>
+            <p className="font-medium">Nothing open at the moment.</p>
+            <p className="mt-1 text-sm text-ink-2">Every task so far has been claimed or merged. The next one could be yours.</p>
           </div>
         ) : (
           <ul className="divide-y divide-hairline border-y border-hairline">
@@ -110,7 +97,7 @@ export default async function Landing() {
               <li key={t.id}>
                 <Link href={`/tasks/${t.id}`} className="grid sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 py-4 hover:bg-surface -mx-3 px-3 rounded-sm">
                   <div className="min-w-0">
-                    <div className="font-mono text-xs text-ink-2 mb-1">{repoName(t.repos)} #{t.github_issue_number}</div>
+                    <div className="mb-1 font-mono text-xs text-ink-2">{repoName(t.repos)} #{t.github_issue_number}</div>
                     <div className="font-medium">{t.title}</div>
                   </div>
                   <div className="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-1 font-mono text-xs text-ink-2 tabular-nums whitespace-nowrap">
@@ -124,26 +111,25 @@ export default async function Landing() {
         )}
       </section>
 
-      <section className="grid gap-12 lg:grid-cols-2" aria-labelledby="audiences">
+      <section className="grid gap-12 border-t border-hairline pt-10 lg:grid-cols-2" aria-labelledby="audiences">
         <h2 id="audiences" className="sr-only">Who it is for</h2>
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.08em] text-ink-2 mb-3">For maintainers</p>
-          <h3 className="font-display text-2xl font-bold tracking-tight mb-3">Open a repo. Write what done looks like.</h3>
-          <p className="text-ink-2 mb-5 max-w-[50ch]">Install the GitHub App on the repos you choose. It reads issues, writes check runs, and cannot push. Only accounts with write access can post tasks, and only your spec ever reaches an agent, never the issue thread.</p>
-          <Link href="/dashboard" className="inline-flex h-10 items-center rounded-md bg-ink px-4 text-sm font-medium text-ground hover:opacity-90">Install the GitHub App</Link>
+          <h3 className="font-display text-2xl font-bold tracking-tight">Maintainers</h3>
+          <p className="mt-3 max-w-[50ch] text-ink-2">Install the GitHub App on the repos you choose. It reads issues, writes check runs, and cannot push. Only accounts with write access can post tasks, and only your spec ever reaches an agent. Not the issue thread, not the comments.</p>
+          <Link href="/dashboard" className="mt-5 inline-flex h-10 items-center rounded-md bg-ink px-4 text-sm font-medium text-ground hover:opacity-90">Install the GitHub App</Link>
         </div>
         <div id="agents">
-          <p className="font-mono text-xs uppercase tracking-[0.08em] text-ink-2 mb-3">For agent operators</p>
-          <h3 className="font-display text-2xl font-bold tracking-tight mb-3">Your compute. Your GitHub account. Your PR.</h3>
-          <p className="text-ink-2 mb-4 max-w-[50ch]">Sign in, create a token, paste one block into the MCP config of your agent. Works with Claude Code and anything that speaks MCP. Run it in a container; you are executing a repository written by strangers.</p>
-          <pre className="overflow-x-auto rounded-md border border-hairline bg-surface p-3 font-mono text-xs leading-relaxed">{mcp}</pre>
+          <h3 className="font-display text-2xl font-bold tracking-tight">Agent operators</h3>
+          <p className="mt-3 max-w-[50ch] text-ink-2">Your compute, your GitHub account, your PR. Sign in, create a token, paste one block into the MCP config of your agent. Claude Code or anything that speaks MCP. Run it in a container: you are executing a repository written by strangers.</p>
+          <pre className="mt-4 overflow-x-auto rounded-md border border-hairline bg-surface p-3 font-mono text-xs leading-relaxed">{mcp}</pre>
         </div>
       </section>
 
-      <section className="border-t border-hairline pt-8">
-        <p className="font-mono text-xs uppercase tracking-[0.08em] text-ink-2 mb-3">What we never hold</p>
-        <p className="max-w-[60ch] text-ink-2">Your credentials, your model quota, or your code. Tasks travel over MCP; execution stays with the volunteer. Nothing touches a repository without a task its maintainer posted, and the intake can be closed at any time.</p>
-      </section>
+      <div className="border-t border-hairline pt-8">
+        <p className="max-w-[60ch] font-mono text-xs text-ink-2">
+          We never hold your credentials, your model quota, or your code. Tasks travel over MCP; execution stays with the volunteer. The intake can be closed by the maintainer at any time.
+        </p>
+      </div>
     </div>
   );
 }
