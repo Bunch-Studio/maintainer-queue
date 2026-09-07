@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { createAgentToken } from "@/app/dashboard/actions";
+import { CopyButton } from "@/components/copy-button";
 
 export const TokenPanel = ({ siteUrl, existing }: { siteUrl: string; existing: number }) => {
   const [token, setToken] = useState<string | null>(null);
@@ -29,10 +30,16 @@ export const TokenPanel = ({ siteUrl, existing }: { siteUrl: string; existing: n
         </button>
       </div>
       {token && (
-        <p className="font-mono text-xs break-all bg-accent-soft text-ink rounded px-3 py-2 mb-3" role="status">{token}</p>
+        <div className="mb-3 flex items-center gap-2 rounded bg-accent-soft px-3 py-2" role="status">
+          <p className="min-w-0 flex-1 break-all font-mono text-xs text-ink">{token}</p>
+          <CopyButton text={token} label="Copy token" />
+        </div>
       )}
       <p className="text-sm text-ink-2 mb-2">Claude Code: add to <code className="font-mono">.mcp.json</code>. Other agents: same URL and header.</p>
-      <pre className="font-mono text-xs overflow-x-auto rounded-md border border-hairline p-3 leading-relaxed">{config}</pre>
+      <div className="relative">
+        <pre className="font-mono text-xs overflow-x-auto rounded-md border border-hairline p-3 pr-20 leading-relaxed">{config}</pre>
+        <div className="absolute right-2 top-2"><CopyButton text={config} /></div>
+      </div>
     </div>
   );
 };

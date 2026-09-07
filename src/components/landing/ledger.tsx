@@ -29,8 +29,8 @@ export const Ledger = () => (
         {EVENTS.map((e, i) => (
           <li
             key={e.t}
-            style={{ animationDelay: `${120 + i * 90}ms` }}
-            className={`rise grid grid-cols-[8ch_11ch_1fr] gap-x-4 gap-y-0.5 border-t border-hairline py-3 sm:grid-cols-[8ch_11ch_minmax(18ch,auto)_1fr] ${e.final ? "bg-accent-soft/60 -mx-3 px-3 rounded-sm" : ""}`}
+            style={{ animationDelay: `${i * 70}ms` }}
+            className={`reveal grid grid-cols-[8ch_11ch_1fr] gap-x-4 gap-y-0.5 border-t border-hairline py-3 sm:grid-cols-[8ch_11ch_minmax(18ch,auto)_1fr] ${e.final ? "pulse-once bg-accent-soft/60 -mx-3 px-3 rounded-sm" : ""}`}
           >
             <span className="tabular-nums text-ink-2">{e.t}</span>
             <span className={`${tone[e.who]} font-medium`}>{e.who}</span>

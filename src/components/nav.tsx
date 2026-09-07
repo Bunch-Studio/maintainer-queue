@@ -10,7 +10,7 @@ export const Nav = async () => {
   const login = (user?.user_metadata?.user_name as string | undefined) ?? user?.email;
 
   return (
-    <header className="border-b border-hairline">
+    <header className="sticky top-0 z-20 border-b border-hairline bg-ground/80 backdrop-blur-md supports-[backdrop-filter]:bg-ground/70">
       <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
         <Link href="/" className="font-display font-bold text-lg tracking-tight whitespace-nowrap shrink-0">{name}</Link>
         <nav className="flex items-center gap-4 sm:gap-6 text-sm whitespace-nowrap">
@@ -29,7 +29,7 @@ export const Nav = async () => {
             <form action={async () => { "use server"; await signInWithGitHub("/dashboard"); }}>
               <button
                 type="submit"
-                className="h-9 px-3 rounded-md bg-ink text-ground text-sm font-medium hover:opacity-90 active:opacity-80"
+                className="btn h-9 px-3 rounded-md bg-ink text-ground text-sm font-medium hover:opacity-90"
               >
                 <span className="sm:hidden">Sign in</span>
                 <span className="hidden sm:inline">Sign in with GitHub</span>

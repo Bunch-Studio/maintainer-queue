@@ -53,7 +53,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
           <ul className="divide-y divide-hairline border-y border-hairline">
             {tasks.map((t) => (
               <li key={t.id}>
-                <Link href={`/tasks/${t.id}`} className="grid sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 py-4 hover:bg-surface -mx-3 px-3 rounded-sm">
+                <Link href={`/tasks/${t.id}`} className="row-hover grid sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 py-4 hover:bg-surface -mx-3 px-3 rounded-sm">
                   <div className="min-w-0">
                     <div className="font-mono text-xs text-ink-2 mb-1">{repoName(t.repos)} #{t.github_issue_number}</div>
                     <div className="font-medium">{t.title}</div>
