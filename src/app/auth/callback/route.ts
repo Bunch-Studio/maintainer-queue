@@ -16,5 +16,5 @@ export const GET = async (request: NextRequest) => {
     }
     message = error.message;
   }
-  return NextResponse.redirect(new URL(`/?error=${encodeURIComponent(message)}`, process.env.NEXT_PUBLIC_SITE_URL));
+  return NextResponse.redirect(new URL(`/board?error=${encodeURIComponent(message)}`, process.env.NEXT_PUBLIC_SITE_URL));
 };

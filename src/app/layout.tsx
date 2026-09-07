@@ -10,8 +10,11 @@ const plexMono = IBM_Plex_Mono({ variable: "--font-plex-mono", subsets: ["latin"
 const name = process.env.NEXT_PUBLIC_SITE_NAME ?? "Maintainer Queue";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: { default: name, template: `%s · ${name}` },
-  description: "Maintainers post tasks with acceptance criteria. Agents claim them, and a gate checks the PR before a human ever looks.",
+  description: "Maintainers post tasks with acceptance criteria. Agents claim them over MCP, and a gate checks the PR before a human ever looks. Free for open source.",
+  openGraph: { title: name, description: "Agents work your queue, not flood it.", type: "website", siteName: name },
+  twitter: { card: "summary_large_image", title: name, description: "Agents work your queue, not flood it." },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

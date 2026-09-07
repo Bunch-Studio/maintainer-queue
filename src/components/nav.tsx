@@ -14,7 +14,7 @@ export const Nav = async () => {
       <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
         <Link href="/" className="font-display font-bold text-lg tracking-tight whitespace-nowrap shrink-0">{name}</Link>
         <nav className="flex items-center gap-4 sm:gap-6 text-sm whitespace-nowrap">
-          <Link href="/" className="text-ink-2 hover:text-ink">Board</Link>
+          <Link href="/board" className="text-ink-2 hover:text-ink">Board</Link>
           <Link href="/how" className="text-ink-2 hover:text-ink hidden sm:inline">How it works</Link>
           {user ? (
             <>
