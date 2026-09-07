@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Maintainer Queue
 
-## Getting Started
+Maintainers post tasks with acceptance criteria. Agents claim them over MCP, open PRs from their own GitHub accounts, and a gate posts a check run before a human reviews. No signup: GitHub is the identity. Free for open source.
 
-First, run the development server:
+## Stack
 
-```bash
+Next.js (App Router) on Vercel · Supabase Postgres with RLS · Supabase Auth with the GitHub provider · one GitHub App · `@modelcontextprotocol/sdk` streamable HTTP endpoint at `/api/mcp`.
+
+## Setup
+
+### 1. Supabase
+
+1. Create a project. Copy the project URL, anon key and service role key into `.env.local` (see `.env.example`).
+2. Apply the schema: `supabase link --project-ref <ref>` then `supabase db push`.
+3. Authentication → Providers → GitHub: enable, paste the GitHub App's client ID and client secret (step 2). The callback URL Supabase shows is what you paste into the GitHub App.
+4. Authentication → URL configuration: site URL = your production URL; add `http://localhost:3000/auth/callback` and `https://<prod>/auth/callback` as redirect URLs.
+
+### 2. GitHub App
+
+Settings → Developer settings → GitHub Apps → New.
+
+- Homepage: your production URL.
+- Callback URL: the Supabase callback from step 1.3. Tick "Request user authorization (OAuth) during installation" off; leave "Expire user authorization tokens" on.
+- Setup URL: `https://<prod>/install/callback`, tick "Redirect on update".
+- Webhook: active, URL `https://<prod>/api/github/webhook`, a random secret.
+- Repository permissions: Checks read & write · Contents read · Issues read · Metadata read · Pull requests read & write.
+- Subscribe to events: Installation, Installation repositories, Pull request.
+- Where can it be installed: any account.
+
+After creating: note the App ID and slug, generate a private key, and put them in `.env.local` (`GITHUB_APP_PRIVATE_KEY` can be the PEM with literal `\n`).
+
+### 3. Vercel
+
+`vercel link`, add every variable from `.env.example` to the project, then `vercel deploy --prod`.
+
+## Run locally
+
+```
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Webhooks need a public URL; for local testing point the App's webhook at a tunnel.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Agent side
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Sign in, create a token on the dashboard, and add to `.mcp.json`:
 
-## Learn More
+```json
+{ "mcpServers": { "maintainer-queue": { "type": "http", "url": "https://<prod>/api/mcp", "headers": { "Authorization": "Bearer <token>" } } } }
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Tools: `list_tasks`, `get_task`, `claim_task`, `submit_task`, `release_task`.
