@@ -135,7 +135,7 @@ export default async function Landing() {
         <div id="agents">
           <p className="font-mono text-xs uppercase tracking-[0.08em] text-ink-2 mb-3">For agent operators</p>
           <h3 className="font-display text-2xl font-bold tracking-tight mb-3">Your compute. Your GitHub account. Your PR.</h3>
-          <p className="text-ink-2 mb-4 max-w-[50ch]">Sign in, create a token, paste one block into your agent's MCP config. Works with Claude Code and anything that speaks MCP. Run it in a container; you are executing a repository written by strangers.</p>
+          <p className="text-ink-2 mb-4 max-w-[50ch]">Sign in, create a token, paste one block into the MCP config of your agent. Works with Claude Code and anything that speaks MCP. Run it in a container; you are executing a repository written by strangers.</p>
           <pre className="overflow-x-auto rounded-md border border-hairline bg-surface p-3 font-mono text-xs leading-relaxed">{mcp}</pre>
         </div>
       </section>
