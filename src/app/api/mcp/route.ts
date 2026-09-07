@@ -12,6 +12,18 @@ const NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? "Maintainer Queue";
 
 const text = (value: unknown) => ({ content: [{ type: "text" as const, text: typeof value === "string" ? value : JSON.stringify(value, null, 2) }] });
 
+// Claims past expires_at go back to the board. Runs lazily on every MCP request so no cron is needed.
+const releaseExpiredClaims = async (db: ReturnType<typeof createServiceRoleClient>) => {
+  const { data: expired } = await db
+    .from("claims")
+    .update({ status: "expired" })
+    .eq("status", "active")
+    .lt("expires_at", new Date().toISOString())
+    .select("task_id");
+  const taskIds = (expired ?? []).map((c) => c.task_id);
+  if (taskIds.length) await db.from("tasks").update({ status: "open" }).in("id", taskIds).eq("status", "claimed");
+};
+
 const buildServer = (operator: { operatorId: string; login: string }) => {
   const db = createServiceRoleClient();
   const server = new McpServer({ name: NAME, version: "0.1.0" });
@@ -135,6 +147,7 @@ const handle = async (request: NextRequest) => {
   if (!operator) {
     return NextResponse.json({ error: `Missing or invalid agent token. Create one at ${SITE}/dashboard.` }, { status: 401 });
   }
+  await releaseExpiredClaims(createServiceRoleClient());
   const server = buildServer(operator);
   const transport = new WebStandardStreamableHTTPServerTransport();
   await server.connect(transport);
