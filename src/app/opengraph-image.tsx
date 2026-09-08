@@ -11,39 +11,42 @@ const loadFont = async (family: string, weight: number, text: string) => {
   return fetch(url).then((r) => r.arrayBuffer());
 };
 
-const ROWS: [string, string][] = [
-  ["Task claimed by the PR author", "egeoztass"],
-  ["Diff within the task limit", "6 / 30 lines"],
-  ["Repository CI", "2 checks green"],
-  ["PR text short, links the task", "27 words"],
-];
+const REMOVED = "Agents flood your inbox.";
+const ADDED = "Agents work your queue.";
+const HUNK = "@@ -1 +1 @@ what maintainers get from agents";
+const FOOT = "maintainer-queue.vercel.app · free for open source · no signup, GitHub is the identity";
 
 export default async function Image() {
-  const headline = "Agents work your queue, not flood it.";
   const [display, mono] = await Promise.all([
-    loadFont("Bricolage Grotesque", 700, headline),
-    loadFont("IBM Plex Mono", 400, ROWS.flat().join("") + "Maintainer Queue fix: trim the name in greetReady for one human reviewmaintainer-queue.vercel.app · free for open source0123456789#/·:"),
+    loadFont("Bricolage Grotesque", 700, REMOVED + ADDED),
+    loadFont("IBM Plex Mono", 400, HUNK + FOOT + "Maintainer Queue1−+"),
   ]);
 
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", background: "#f4f7f3", color: "#18211b", padding: 64, fontFamily: "Mono" }}>
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: 560 }}>
-          <div style={{ fontFamily: "Mono", fontSize: 20, color: "#4d5852" }}>Maintainer Queue</div>
-          <div style={{ fontFamily: "Display", fontSize: 64, lineHeight: 1, letterSpacing: -1.5 }}>{headline}</div>
-          <div style={{ fontFamily: "Mono", fontSize: 18, color: "#4d5852" }}>maintainer-queue.vercel.app · free for open source</div>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#141b17", color: "#e9eeea", padding: "56px 64px", fontFamily: "Mono" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 22, color: "#a5b0a9" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 30, height: 30, padding: 6, borderRadius: 7, background: "#e9eeea" }}>
+            <div style={{ height: 4, borderRadius: 2, background: "#141b17", opacity: 0.55 }} />
+            <div style={{ height: 4, borderRadius: 2, background: "#141b17", opacity: 0.55 }} />
+            <div style={{ height: 4, borderRadius: 2, background: "#1f7a4d" }} />
+          </div>
+          Maintainer Queue
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignSelf: "center", marginLeft: 48, flex: 1, background: "#ffffff", border: "1px solid #d8ded9", borderRadius: 12, overflow: "hidden", fontSize: 16 }}>
-          <div style={{ display: "flex", padding: "16px 22px", borderBottom: "1px solid #d8ded9", color: "#18211b" }}>fix: trim the name in greet</div>
-          {ROWS.map(([name, detail]) => (
-            <div key={name} style={{ display: "flex", alignItems: "center", padding: "14px 22px", borderBottom: "1px solid #d8ded9" }}>
-              <div style={{ width: 12, height: 12, borderRadius: 6, background: "#1f7a4d", marginRight: 14 }} />
-              <div style={{ flex: 1 }}>{name}</div>
-              <div style={{ color: "#4d5852", marginLeft: 16 }}>{detail}</div>
-            </div>
-          ))}
-          <div style={{ display: "flex", padding: "16px 22px", background: "#e3f1e8", color: "#1f7a4d" }}>Ready for one human review</div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          <div style={{ fontSize: 22, color: "#a5b0a9" }}>{HUNK}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+            <div style={{ width: 52, fontSize: 24, color: "#c96b62", textAlign: "right" }}>1 −</div>
+            <div style={{ fontFamily: "Display", fontSize: 66, lineHeight: 1, letterSpacing: -2, color: "#d98a82", background: "rgba(180,69,59,0.22)", padding: "4px 12px", borderRadius: 6, textDecoration: "line-through", textDecorationColor: "#d98a82" }}>{REMOVED}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+            <div style={{ width: 52, fontSize: 24, color: "#5cc48c", textAlign: "right" }}>1 +</div>
+            <div style={{ fontFamily: "Display", fontSize: 66, lineHeight: 1, letterSpacing: -2, color: "#7fdca6", background: "rgba(31,122,77,0.28)", padding: "4px 12px", borderRadius: 6 }}>{ADDED}</div>
+          </div>
         </div>
+
+        <div style={{ fontSize: 20, color: "#a5b0a9" }}>{FOOT}</div>
       </div>
     ),
     { ...size, fonts: [{ name: "Display", data: display, weight: 700, style: "normal" }, { name: "Mono", data: mono, weight: 400, style: "normal" }] },
