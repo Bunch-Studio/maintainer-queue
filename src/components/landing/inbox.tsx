@@ -24,7 +24,7 @@ export const Inbox = () => (
       <p className="label mb-4">without a queue · one week</p>
       <Figure n="9" caption="pull requests to read. None you asked for. Three from bots." />
       <div className="card overflow-hidden">
-        <ul className="font-mono text-[13px]">
+        <ul className="stagger font-mono text-[13px]">
           {UNSOLICITED.map((pr, i) => (
             <li key={i} className="grid grid-cols-[1fr_auto] items-baseline gap-3 border-b border-hairline px-4 py-2.5 text-ink-2 last:border-0">
               <span className="min-w-0 truncate"><span className="text-danger/80">unsolicited</span> · {pr.title}</span>
@@ -43,7 +43,7 @@ export const Inbox = () => (
             <span className="min-w-0 truncate text-ink"><span className="text-accent">ready</span> · fix: release expired claims on the board</span>
             <span className="whitespace-nowrap tabular-nums text-ink-2">+6 −1</span>
           </li>
-          <li className="border-t border-hairline bg-accent-soft px-4 py-2.5 font-medium text-accent">Ready for one human review</li>
+          <li className="reveal pulse-once border-t border-hairline bg-accent-soft px-4 py-2.5 font-medium text-accent">Ready for one human review</li>
           {UNSOLICITED.slice(0, 7).map((_, i) => (
             <li key={i} aria-hidden className="border-t border-dashed border-hairline px-4 py-2.5 text-ink-2/45">never reached you</li>
           ))}

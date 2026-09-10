@@ -13,7 +13,7 @@ export const Ledger = ({ data }: { data: LedgerData }) => (
       <h3 className="font-display text-lg font-bold tracking-tight">The latest task through the queue</h3>
       <p className="font-mono text-xs text-ink-2">{data.date} · UTC · every row is a recorded event</p>
     </div>
-    <ol className="font-mono text-[13px]">
+    <ol className="stagger font-mono text-[13px]">
       {data.events.map((e) => (
         <li key={`${e.t}-${e.what}`} className={`grid grid-cols-[8ch_minmax(0,1fr)] gap-x-4 border-b border-hairline px-5 py-3 last:border-0 ${e.final ? "bg-accent-soft" : ""}`}>
           <span className="tabular-nums text-ink-2">{e.t}</span>

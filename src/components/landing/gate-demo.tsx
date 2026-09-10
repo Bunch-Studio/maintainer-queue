@@ -77,7 +77,7 @@ export const GateDemo = () => {
             </li>
           ))}
         </ul>
-        <div className={`px-4 py-3 font-medium transition-colors duration-400 ${failed ? "bg-danger-soft text-danger" : pending ? "text-ink-2" : "bg-accent-soft text-accent"}`}>
+        <div key={verdict} className={`verdict verdict-flip px-4 py-3 font-medium ${failed ? "bg-danger-soft text-danger" : pending ? "text-ink-2" : "bg-accent-soft text-accent"}`}>
           {verdict}
         </div>
       </div>

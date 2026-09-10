@@ -312,3 +312,36 @@ details.faq[open] > summary .chev { transform: rotate(45deg); }
 @media (prefers-reduced-motion: reduce) {
   .card-row, .card-verdict, .hero-copy { animation: none; }
 }
+
+/* Hero: words rise in sequence before the card arrives */
+.word { display: inline-block; animation: rise 640ms var(--ease-out) both; }
+
+/* Scroll-staggered lists: each child gets its own slice of the scroll range */
+@supports (animation-timeline: view()) {
+  .stagger > * { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
+  .stagger > *:nth-child(2) { animation-range: entry 4% entry 34%; }
+  .stagger > *:nth-child(3) { animation-range: entry 8% entry 38%; }
+  .stagger > *:nth-child(4) { animation-range: entry 12% entry 42%; }
+  .stagger > *:nth-child(5) { animation-range: entry 16% entry 46%; }
+  .stagger > *:nth-child(6) { animation-range: entry 20% entry 50%; }
+  .stagger > *:nth-child(7) { animation-range: entry 24% entry 54%; }
+  .stagger > *:nth-child(8) { animation-range: entry 28% entry 58%; }
+  .stagger > *:nth-child(9) { animation-range: entry 32% entry 62%; }
+  .stagger > *:nth-child(n+10) { animation-range: entry 36% entry 66%; }
+
+  /* The flow line draws itself as the steps scroll past; each node lights when its step enters */
+  .flow-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw linear both; animation-timeline: view(); animation-range: entry 20% exit 70%; }
+  .node { animation: light linear both; animation-timeline: view(); animation-range: entry 25% entry 45%; }
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes light {
+  from { background: var(--surface); color: var(--ink-2); border-color: var(--hairline); }
+  to { background: var(--accent); color: var(--ground); border-color: var(--accent); }
+}
+.verdict { transition: background-color 400ms var(--ease-out), color 400ms var(--ease-out); }
+.verdict-flip { animation: pulse-once 900ms var(--ease-inout) 1; }
+@media (prefers-reduced-motion: reduce) {
+  .word, .stagger > *, .flow-line, .node, .verdict-flip { animation: none; }
+  .flow-line { stroke-dashoffset: 0; }
+  .node { background: var(--accent); color: var(--ground); border-color: var(--accent); }
+}
