@@ -162,5 +162,8 @@ const handle = async (request: NextRequest) => {
 };
 
 export const POST = handle;
-export const GET = handle;
-export const DELETE = handle;
+
+// Stateless server: no server-initiated stream, so GET and DELETE are declined instead of holding a function open.
+const notAllowed = () => new Response(null, { status: 405, headers: { Allow: "POST" } });
+export const GET = notAllowed;
+export const DELETE = notAllowed;

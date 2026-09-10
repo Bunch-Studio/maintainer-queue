@@ -1,8 +1,9 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, after, type NextRequest } from "next/server";
 import { getGitHubApp } from "@/lib/github/app";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { must } from "@/lib/db";
 import { processDelivery } from "@/lib/webhooks";
+import { retryFailedDeliveries } from "@/lib/sweep";
 
 // The gate makes several GitHub calls; give it room beyond the default function limit.
 export const maxDuration = 60;
@@ -35,6 +36,8 @@ export const POST = async (request: NextRequest) => {
   try {
     await processDelivery(event, body);
     must(await db.from("webhook_deliveries").update({ status: "done", error: null, processed_at: new Date().toISOString() }).eq("id", deliveryId));
+    // Earlier failures get another go right away, not only at the daily sweep.
+    after(() => retryFailedDeliveries(db).catch((e) => console.error("retry after delivery:", e)));
     return NextResponse.json({ ok: true });
   } catch (e) {
     const error = e instanceof Error ? e.message : String(e);

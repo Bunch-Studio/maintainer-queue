@@ -53,7 +53,7 @@ const deactivate = async (db: Db, filter: { installationId?: number; githubRepoI
 
 // PRs from forks are missing from check_suite payloads, so ask GitHub which PRs the commit belongs to.
 const pullsForCommit = async (db: Db, githubRepoId: number, sha: string) => {
-  const { data: repo } = await db.from("repos").select("installation_id, owner, name").eq("github_repo_id", githubRepoId).maybeSingle();
+  const { data: repo } = must(await db.from("repos").select("installation_id, owner, name").eq("github_repo_id", githubRepoId).maybeSingle());
   if (!repo) return [];
   const octokit = await getInstallationOctokit(repo.installation_id);
   const { data } = await octokit.request("GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls", { owner: repo.owner, repo: repo.name, commit_sha: sha, per_page: 20 });
@@ -86,8 +86,8 @@ export const processDelivery = async (event: string, body: any) => {
     if (["opened", "synchronize", "reopened", "edited", "ready_for_review"].includes(body.action)) {
       await runGate(repoId, body.pull_request);
     } else if (body.action === "closed") {
-      if (body.pull_request.merged) await recordMerge(repoId, body.pull_request);
-      else await recordClose(body.pull_request);
+      const result = body.pull_request.merged ? await recordMerge(repoId, body.pull_request) : await recordClose(body.pull_request);
+      console.log(`pull_request.closed #${body.pull_request.number} merged=${body.pull_request.merged}: ${result}`);
     }
   }
 
