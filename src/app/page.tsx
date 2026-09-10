@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Ledger } from "@/components/landing/ledger";
+import { loadLedger } from "@/lib/ledger";
 import { GateDemo } from "@/components/landing/gate-demo";
 import { CopyButton } from "@/components/copy-button";
 import { StatusDot } from "@/components/status-dot";
@@ -9,10 +10,10 @@ export const dynamic = "force-dynamic";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
-// Real numbers from 7 September 2026. The argument is the figures, so they get display type.
-const STATS = [
-  { n: "5", unit: "PRs", what: "opened by one operator with one agent on an open-source project, in one afternoon." },
-  { n: "2:26", unit: "min", what: "from a task being posted to its PR merged, with the gate doing the first pass." },
+// The argument is the figures, so they get display type. They come from the database, not from copy.
+const stats = (merged: number, duration: string) => [
+  { n: String(merged), unit: merged === 1 ? "PR merged" : "PRs merged", what: "through the queue, each read by one human after the gate had already passed." },
+  { n: duration, unit: "min", what: "from the latest task being posted to its PR merged, with the gate doing the first pass." },
   { n: "0", unit: "unsolicited", what: "pull requests reach a maintainer. Nothing moves without a task they posted." },
 ];
 
@@ -21,9 +22,10 @@ const repoName = (r: Row["repos"]) => (Array.isArray(r) ? r[0]?.full_name : r?.f
 
 export default async function Landing() {
   const supabase = await createClient();
-  const [{ data: tasks }, { count: repoCount }] = await Promise.all([
+  const [{ data: tasks }, { count: repoCount }, ledger] = await Promise.all([
     supabase.from("tasks").select("id, title, status, max_diff_lines, github_issue_number, repos ( full_name )").eq("status", "open").order("created_at", { ascending: false }).limit(5),
     supabase.from("repos").select("id", { count: "exact", head: true }).eq("active", true),
+    loadLedger(),
   ]);
   const rows = (tasks ?? []) as Row[];
   const mcp = JSON.stringify({ mcpServers: { "maintainer-queue": { type: "http", url: `${site}/api/mcp`, headers: { Authorization: "Bearer <token>" } } } }, null, 2);
@@ -54,8 +56,9 @@ export default async function Landing() {
           </div>
         </div>
 
+        {ledger && (
         <dl className="after-hero mt-16 grid gap-8 border-t border-hairline pt-8 sm:grid-cols-3 sm:gap-6">
-          {STATS.map((s) => (
+          {stats(ledger.mergedCount, ledger.duration).map((s) => (
             <div key={s.unit} className="sm:border-l sm:border-hairline sm:pl-5 first:sm:border-0 first:sm:pl-0">
               <dt className="sr-only">{s.unit}</dt>
               <dd className="flex items-baseline gap-2">
@@ -66,9 +69,10 @@ export default async function Landing() {
             </div>
           ))}
         </dl>
+        )}
       </section>
 
-      <Ledger />
+      {ledger && <Ledger data={ledger} />}
 
       <section className="reveal grid gap-10 lg:grid-cols-[5fr_7fr] lg:items-start" aria-labelledby="why">
         <h2 id="why" className="font-display text-[clamp(30px,3.6vw,44px)] font-bold leading-[1.05] tracking-tight">Review time is the scarce thing. Compute never was.</h2>

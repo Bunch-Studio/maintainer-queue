@@ -65,7 +65,7 @@ export const GateDemo = () => {
 
       <div className="self-start rounded-lg border border-hairline bg-surface font-mono text-[13px] shadow-[0_1px_0_var(--hairline),0_24px_48px_-32px_rgba(0,0,0,0.45)]" role="status" aria-live="polite">
         <div className="flex items-baseline justify-between gap-4 border-b border-hairline px-4 py-3">
-          <span className="flex items-center gap-2.5 font-medium"><span aria-hidden className="live-dot inline-block size-2 rounded-full bg-accent" />fix: trim the name in greet</span>
+          <span className="flex items-center gap-2.5 font-medium"><span aria-hidden className="live-dot inline-block size-2 rounded-full bg-accent" />fix: release expired claims on the board</span>
           <span className="text-ink-2 tabular-nums">+{Math.ceil(diff * 0.6)} −{Math.floor(diff * 0.4)}</span>
         </div>
         <ul>
