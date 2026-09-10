@@ -21,6 +21,21 @@
   color-scheme: light;
 }
 
+/* Marketing pages commit to one bright look in every system theme. Product pages keep both. */
+:root:has(.marketing) {
+  --ground: oklch(98.2% 0.005 95);
+  --surface: oklch(100% 0 0);
+  --ink: oklch(18% 0.01 260);
+  --ink-2: oklch(46% 0.012 260);
+  --hairline: oklch(90.5% 0.006 260);
+  --accent: oklch(52% 0.15 150);
+  --accent-soft: oklch(95.5% 0.045 150);
+  --danger: oklch(55% 0.18 25);
+  --danger-soft: oklch(95% 0.035 25);
+  --pending: oklch(72% 0.13 80);
+  color-scheme: light;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --ground: oklch(17% 0.01 150);
@@ -40,6 +55,19 @@
     --band-hairline: oklch(26% 0.012 150);
     --band-accent: oklch(76% 0.13 155);
     color-scheme: dark;
+  }
+  :root:has(.marketing) {
+    --ground: oklch(98.2% 0.005 95);
+    --surface: oklch(100% 0 0);
+    --ink: oklch(18% 0.01 260);
+    --ink-2: oklch(46% 0.012 260);
+    --hairline: oklch(90.5% 0.006 260);
+    --accent: oklch(52% 0.15 150);
+    --accent-soft: oklch(95.5% 0.045 150);
+    --danger: oklch(55% 0.18 25);
+    --danger-soft: oklch(95% 0.035 25);
+    --pending: oklch(72% 0.13 80);
+    color-scheme: light;
   }
 }
 
@@ -249,3 +277,36 @@ input[type="range"].range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 
   animation: shimmer 1.4s ease-in-out infinite;
 }
 @keyframes shimmer { to { background-position: -200% 0; } }
+
+/* The check-run card: the one object the whole landing is built around */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  box-shadow: 0 1px 0 var(--hairline), 0 16px 40px -24px color-mix(in oklch, var(--ink) 45%, transparent);
+}
+.card-row { animation: check-in 480ms var(--ease-out) both; }
+.card-row:nth-child(1) { animation-delay: 300ms; }
+.card-row:nth-child(2) { animation-delay: 480ms; }
+.card-row:nth-child(3) { animation-delay: 660ms; }
+.card-row:nth-child(4) { animation-delay: 840ms; }
+.card-row:nth-child(5) { animation-delay: 1020ms; }
+.card-verdict { animation: check-in 520ms var(--ease-out) 1300ms both; }
+@keyframes check-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.hero-copy { animation: rise 560ms var(--ease-out) 80ms both; }
+
+/* Section label: mono, with a rule that runs to the edge */
+.label { display: flex; align-items: center; gap: 12px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); }
+.label::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+
+details.faq > summary { list-style: none; cursor: pointer; }
+details.faq > summary::-webkit-details-marker { display: none; }
+details.faq > summary .chev { transition: transform 200ms var(--ease-out); }
+details.faq[open] > summary .chev { transform: rotate(45deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .card-row, .card-verdict, .hero-copy { animation: none; }
+}
