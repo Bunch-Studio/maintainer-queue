@@ -138,3 +138,26 @@ export const deleteAccount = async () => {
   await supabase.auth.signOut();
   redirect("/");
 };
+
+// Open issues on a connected repo that do not have a task yet, so the form can offer a pick list instead of a number.
+export const listOpenIssues = async (repoId: string): Promise<{ issues?: { number: number; title: string }[]; error?: string }> => {
+  try {
+    await requireOperator();
+    const db = createServiceRoleClient();
+    const { data: repo } = await db.from("repos").select("installation_id, owner, name").eq("id", repoId).single();
+    if (!repo) return { error: "Repository not connected." };
+    const octokit = await getInstallationOctokit(repo.installation_id);
+    const [{ data: issues }, { data: tasks }] = await Promise.all([
+      octokit.request("GET /repos/{owner}/{repo}/issues", { owner: repo.owner, repo: repo.name, state: "open", per_page: 100, sort: "created", direction: "desc" }),
+      db.from("tasks").select("github_issue_number").eq("repo_id", repoId),
+    ]);
+    const taken = new Set((tasks ?? []).map((t) => t.github_issue_number));
+    return {
+      issues: issues
+        .filter((i) => !i.pull_request && !taken.has(i.number))
+        .map((i) => ({ number: i.number, title: i.title })),
+    };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Could not load issues." };
+  }
+};
