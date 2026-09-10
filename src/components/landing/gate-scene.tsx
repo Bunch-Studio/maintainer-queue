@@ -74,52 +74,55 @@ export const GateScene = () => {
   const diff = add + del;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12">
-      <div className="min-w-0">
-        <div className="card overflow-hidden font-mono text-[13px]" aria-live="polite">
-          <div className="flex items-center justify-between gap-4 border-b border-hairline px-4 py-3">
-            <span className="flex min-w-0 items-center gap-2.5">
-              <span aria-hidden className={`inline-block size-2 shrink-0 rounded-full transition-colors duration-500 ${f.merged ? "bg-ink" : "bg-accent"}`} />
-              <span className="truncate font-medium text-ink">fix: release expired claims on the board</span>
-            </span>
-            <span className="shrink-0 tabular-nums text-ink-2">{f.merged ? "merged" : `+${add} −${del}`}</span>
-          </div>
-          <ul>
-            {NAMES.map((name, k) => {
-              const on = f.checks[k] !== undefined;
-              const detail = k === 1 ? (on ? `${diff} / ${LIMIT} lines` : "") : f.details[k];
-              return (
-                <li key={name} className={`grid grid-cols-[14px_1fr_auto] items-baseline gap-3 border-b border-hairline px-4 py-2.5 transition-[opacity,transform] duration-500 ease-out ${on ? "translate-x-0 opacity-100" : "-translate-x-1 opacity-35"}`}>
-                  <span aria-hidden className={`inline-block size-2.5 self-center rounded-full transition-colors duration-500 ${dot(f.checks[k])}`} />
-                  <span className="text-ink">{name}</span>
-                  <span className={`whitespace-nowrap tabular-nums transition-colors duration-500 ${f.checks[k] === false ? "text-danger" : "text-ink-2"}`}>{detail}</span>
-                </li>
-              );
-            })}
-          </ul>
-          <div className={`relative h-11 overflow-hidden transition-colors duration-500 ${f.tone === "fail" ? "bg-danger-soft" : f.tone === "pass" ? "bg-accent-soft" : "bg-transparent"}`}>
-            <span key={f.verdict || "none"} className={`rise absolute inset-0 flex items-center px-4 font-medium ${f.tone === "fail" ? "text-danger" : f.tone === "pass" ? "text-accent" : f.tone === "wait" ? "text-ink-2" : "text-ink-2/50"}`}>
-              {f.verdict || "waiting for the gate"}
-            </span>
-          </div>
+    <div className="card grid overflow-hidden font-mono text-[13px] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]" aria-live="polite">
+      <div className="min-w-0 border-b border-hairline lg:border-b-0 lg:border-r">
+        <div className="flex h-12 items-center justify-between gap-4 border-b border-hairline bg-ground/60 px-4">
+          <span className="flex min-w-0 items-center gap-2.5">
+            <span aria-hidden className={`inline-block size-2 shrink-0 rounded-full transition-colors duration-500 ${f.merged ? "bg-ink" : "bg-accent"}`} />
+            <span className="truncate font-medium text-ink">fix: release expired claims on the board</span>
+          </span>
+          <span className="shrink-0 tabular-nums text-ink-2">{f.merged ? "merged" : `+${add} −${del}`}</span>
         </div>
-        {!still && (
-          <div aria-hidden className="mt-3 h-[2px] w-full bg-hairline">
-            <div className="h-full bg-accent" style={{ width: `${progress * 100}%` }} />
-          </div>
-        )}
+        <ul>
+          {NAMES.map((name, k) => {
+            const on = f.checks[k] !== undefined;
+            const detail = k === 1 ? (on ? `${diff} / ${LIMIT} lines` : "") : f.details[k];
+            return (
+              <li key={name} className={`grid grid-cols-[14px_1fr_auto] items-baseline gap-3 border-b border-hairline px-4 py-2.5 transition-[opacity,transform] duration-500 ease-out ${on ? "translate-x-0 opacity-100" : "-translate-x-1 opacity-35"}`}>
+                <span aria-hidden className={`inline-block size-2.5 self-center rounded-full transition-colors duration-500 ${dot(f.checks[k])}`} />
+                <span className="text-ink">{name}</span>
+                <span className={`whitespace-nowrap tabular-nums transition-colors duration-500 ${f.checks[k] === false ? "text-danger" : "text-ink-2"}`}>{detail}</span>
+              </li>
+            );
+          })}
+        </ul>
+        <div className={`relative h-11 overflow-hidden transition-colors duration-500 ${f.tone === "fail" ? "bg-danger-soft" : f.tone === "pass" ? "bg-accent-soft" : "bg-transparent"}`}>
+          <span key={f.verdict || "none"} className={`rise absolute inset-0 flex items-center px-4 font-medium ${f.tone === "fail" ? "text-danger" : f.tone === "pass" ? "text-accent" : f.tone === "wait" ? "text-ink-2" : "text-ink-2/50"}`}>
+            {f.verdict || "waiting for the gate"}
+          </span>
+        </div>
       </div>
 
       <div className="min-w-0">
-        <ol className="divide-y divide-hairline border-y border-hairline font-mono text-[13px]">
+        <div className="flex h-12 items-center justify-between gap-4 border-b border-hairline bg-ground/60 px-4 text-ink-2">
+          <span>what happened</span>
+          <span className="tabular-nums">{still ? "final state" : `${i + 1} / ${FRAMES.length}`}</span>
+        </div>
+        <ol>
           {FRAMES.map((fr, k) => (
-            <li key={k} className={`grid grid-cols-[11ch_1fr] gap-x-4 rounded-sm px-2 py-3 transition-[opacity,background-color,transform] duration-500 ease-out ${k === i ? "translate-x-0 bg-surface opacity-100" : k < i ? "opacity-60" : "opacity-25"} ${k === i && !still ? "shadow-[0_1px_0_var(--hairline)]" : ""}`}>
+            <li key={k} className={`grid grid-cols-[11ch_1fr] gap-x-3 border-b border-hairline px-4 py-2.5 transition-[opacity,background-color] duration-500 ease-out last:border-b-0 ${k === i ? "bg-accent-soft/60 opacity-100" : k < i ? "opacity-60" : "opacity-30"}`}>
               <span className={`${tone[fr.who]} font-medium`}>{fr.who}</span>
               <span className="text-ink">{fr.log}</span>
             </li>
           ))}
         </ol>
       </div>
+
+      {!still && (
+        <div aria-hidden className="h-[3px] w-full bg-hairline lg:col-span-2">
+          <div className="h-full bg-accent" style={{ width: `${progress * 100}%` }} />
+        </div>
+      )}
     </div>
   );
 };
