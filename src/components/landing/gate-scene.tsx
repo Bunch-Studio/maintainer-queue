@@ -74,7 +74,7 @@ export const GateScene = () => {
   const diff = add + del;
 
   return (
-    <div className="grid gap-3 rounded-2xl border border-hairline/70 bg-ground p-3 font-mono text-[13px] shadow-[0_1px_0_var(--hairline),0_20px_50px_-36px_color-mix(in_oklch,var(--ink)_40%,transparent)] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]" aria-live="polite">
+    <div className="grid gap-3 rounded-2xl border border-hairline/70 bg-ground p-3 font-mono text-[13px] shadow-[0_1px_0_var(--hairline),0_20px_50px_-36px_color-mix(in_oklch,var(--ink)_40%,transparent)] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start" aria-live="polite">
       <div className="flex min-w-0 flex-col overflow-hidden rounded-xl bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
         <div className="flex h-11 items-center justify-between gap-4 border-b border-hairline/70 px-4">
           <span className="flex min-w-0 items-center gap-2.5">
@@ -83,7 +83,7 @@ export const GateScene = () => {
           </span>
           <span className="shrink-0 tabular-nums text-ink-2">{f.merged ? "merged" : `+${add} −${del}`}</span>
         </div>
-        <ul className="flex-1">
+        <ul>
           {NAMES.map((name, k) => {
             const on = f.checks[k] !== undefined;
             const detail = k === 1 ? (on ? `${diff} / ${LIMIT} lines` : "") : f.details[k];
@@ -96,7 +96,7 @@ export const GateScene = () => {
             );
           })}
         </ul>
-        <div className={`relative mt-auto h-11 overflow-hidden border-t border-hairline/70 transition-colors duration-500 ${f.tone === "fail" ? "bg-danger-soft" : f.tone === "pass" ? "bg-accent-soft" : "bg-transparent"}`}>
+        <div className={`relative h-11 overflow-hidden border-t border-hairline/70 transition-colors duration-500 ${f.tone === "fail" ? "bg-danger-soft" : f.tone === "pass" ? "bg-accent-soft" : "bg-transparent"}`}>
           <span key={f.verdict || "none"} className={`rise absolute inset-0 flex items-center px-4 font-medium ${f.tone === "fail" ? "text-danger" : f.tone === "pass" ? "text-accent" : f.tone === "wait" ? "text-ink-2" : "text-ink-2/50"}`}>
             {f.verdict || "waiting for the gate"}
           </span>
