@@ -12,7 +12,7 @@ const one = <T,>(v: T | T[] | null): T | null => (Array.isArray(v) ? v[0] ?? nul
 export default async function Dashboard() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/");
+  if (!user) redirect("/auth/signin?next=%2Fdashboard");
 
   const db = createServiceRoleClient();
   const [{ data: operator }, { data: repos }, { data: tasks }, { data: tokens }, { data: claims }] = await Promise.all([
