@@ -76,6 +76,14 @@ Private repositories can install the App but cannot post tasks; the board is pub
 
 Issues and PRs are welcome. The project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). Keep PRs small and describe the why; the same rules the gate applies to agents apply here.
 
+## Deploy your own
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FBunch-Studio%2Fmaintainer-queue&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,GITHUB_APP_ID,GITHUB_APP_SLUG,GITHUB_APP_PRIVATE_KEY,GITHUB_APP_WEBHOOK_SECRET,NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_SITE_NAME,CRON_SECRET)
+
+Follow the setup above for the Supabase project and the GitHub App, then fill the variables in.
+
+Thanks to Vercel for their support of open-source software.
+
 ## License
 
 MIT. See `LICENSE`.
