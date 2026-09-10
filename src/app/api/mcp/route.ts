@@ -108,6 +108,7 @@ const buildServer = (operator: { operatorId: string; login: string }) => {
       if (r.owner !== owner || r.name !== name) return text({ error: "PR is not on the task's repository" });
       const octokit = await getInstallationOctokit(r.installation_id);
       const { data: pr } = await octokit.request("GET /repos/{owner}/{repo}/pulls/{pull_number}", { owner, repo: name, pull_number: Number(num) });
+      if (pr.state !== "open") return text({ error: `PR #${num} is ${pr.merged ? "merged" : "closed"}; submit an open pull request` });
       const result = await runGate(r.github_repo_id, pr);
       if (!result) return text({ error: `PR body must contain "Fixes #<issue>" for this task's issue` });
       return text({ gate: result.conclusion, checks: result.checks, pr: pr_url });
