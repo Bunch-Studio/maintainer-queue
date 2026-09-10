@@ -101,11 +101,8 @@ export default async function Landing() {
       <section className="reveal" aria-labelledby="how">
         <p className="label mb-8">02 · how it works</p>
         <h2 id="how" className="max-w-[22ch] font-display text-[clamp(30px,4vw,48px)] font-bold leading-[1.05] tracking-tight">Nothing touches your repository without a task you posted.</h2>
-        <ol className="relative mt-10 divide-y divide-hairline border-y border-hairline lg:pl-14">
-          <svg aria-hidden className="absolute bottom-10 left-[15px] top-10 hidden w-[2px] lg:block" viewBox="0 0 2 100" preserveAspectRatio="none">
-            <line x1="1" y1="0" x2="1" y2="100" stroke="var(--hairline)" strokeWidth="2" />
-            <line className="flow-line" x1="1" y1="0" x2="1" y2="100" stroke="var(--accent)" strokeWidth="2" pathLength={1} />
-          </svg>
+        <ol className="steps relative mt-10 divide-y divide-hairline border-y border-hairline lg:pl-14">
+          <span aria-hidden className="absolute bottom-10 left-[15px] top-10 hidden w-[2px] bg-hairline lg:block"><span className="flow-line block h-full w-full origin-top bg-accent" /></span>
           <li className="relative grid gap-6 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
             <span aria-hidden className="node absolute -left-14 top-10 hidden size-8 items-center justify-center rounded-full border font-mono text-xs lg:flex">1</span>
             <div className="min-w-0">
