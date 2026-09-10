@@ -15,14 +15,13 @@ export const Ledger = ({ data }: { data: LedgerData }) => (
     </div>
     <ol className="font-mono text-[13px]">
       {data.events.map((e) => (
-        <li
-          key={`${e.t}-${e.what}`}
-          className={`grid grid-cols-[8ch_11ch_1fr] gap-x-4 gap-y-0.5 border-b border-hairline px-5 py-3.5 last:border-0 sm:grid-cols-[8ch_11ch_minmax(18ch,auto)_1fr] ${e.final ? "bg-accent-soft" : ""}`}
-        >
+        <li key={`${e.t}-${e.what}`} className={`grid grid-cols-[8ch_minmax(0,1fr)] gap-x-4 border-b border-hairline px-5 py-3 last:border-0 ${e.final ? "bg-accent-soft" : ""}`}>
           <span className="tabular-nums text-ink-2">{e.t}</span>
-          <span className={`${tone[e.who]} font-medium`}>{e.who}</span>
-          <span className="text-ink">{e.what}</span>
-          <span className="col-start-2 col-span-2 min-w-0 break-words text-ink-2 sm:col-start-auto sm:col-span-1">{e.detail}</span>
+          <span className="min-w-0">
+            <span className={`${tone[e.who]} font-medium`}>{e.who}</span>
+            <span className="text-ink"> · {e.what}</span>
+            <span className="mt-0.5 block break-words text-ink-2">{e.detail}</span>
+          </span>
         </li>
       ))}
     </ol>
