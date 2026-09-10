@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { loadLedger } from "@/lib/ledger";
 import { Ledger } from "@/components/landing/ledger";
-import { GateDemo } from "@/components/landing/gate-demo";
+import { GateScene } from "@/components/landing/gate-scene";
 import { CheckCard } from "@/components/landing/check-card";
 import { Inbox } from "@/components/landing/inbox";
 import { Faq } from "@/components/landing/faq";
@@ -153,12 +153,12 @@ submit_task { "pr_url": "…/pull/57" }
       </section>
 
       <section id="demo" className="reveal scroll-mt-24" aria-labelledby="try">
-        <p className="label mb-8">03 · try the gate</p>
+        <p className="label mb-8">03 · watch the gate</p>
         <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
-          <h2 id="try" className="max-w-[22ch] font-display text-[clamp(30px,4vw,48px)] font-bold leading-[1.05] tracking-tight">Break a pull request. Watch the gate catch it.</h2>
-          <p className="font-mono text-xs text-ink-2">same rules as production · the verdict lands as a check run</p>
+          <h2 id="try" className="max-w-[22ch] font-display text-[clamp(30px,4vw,48px)] font-bold leading-[1.05] tracking-tight">One pull request, start to finish.</h2>
+          <p className="font-mono text-xs text-ink-2">every beat is something the real gate does · loops</p>
         </div>
-        <GateDemo />
+        <GateScene />
       </section>
 
       <section className="reveal" aria-labelledby="live">
