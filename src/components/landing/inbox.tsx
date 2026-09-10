@@ -11,10 +11,18 @@ const UNSOLICITED = [
   { title: "Fix typo in CONTRIBUTING", diff: "+1 −1" },
 ];
 
+const Figure = ({ n, caption }: { n: string; caption: string }) => (
+  <p className="mb-4 flex items-baseline gap-3">
+    <span className="font-display text-[44px] font-bold leading-none tracking-[-0.03em] tabular-nums">{n}</span>
+    <span className="max-w-[34ch] text-sm leading-snug text-ink-2">{caption}</span>
+  </p>
+);
+
 export const Inbox = () => (
-  <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
+  <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
     <div className="min-w-0">
-      <p className="mb-3 font-mono text-xs text-ink-2">without a queue · one week</p>
+      <p className="label mb-4">without a queue · one week</p>
+      <Figure n="9" caption="pull requests to read. None you asked for. Three from bots." />
       <div className="card overflow-hidden">
         <ul className="font-mono text-[13px]">
           {UNSOLICITED.map((pr, i) => (
@@ -25,26 +33,22 @@ export const Inbox = () => (
           ))}
         </ul>
       </div>
-      <p className="mt-4 flex items-baseline gap-2">
-        <span className="font-display text-[44px] font-bold leading-none tracking-[-0.03em] tabular-nums">9</span>
-        <span className="text-sm text-ink-2">pull requests to read. None you asked for. Three from bots.</span>
-      </p>
     </div>
     <div className="min-w-0">
-      <p className="mb-3 font-mono text-xs text-ink-2">with the queue · one week</p>
+      <p className="label mb-4">with the queue · one week</p>
+      <Figure n="1" caption="pull request, for a task you wrote, already checked. The rest never reached you." />
       <div className="card overflow-hidden">
         <ul className="font-mono text-[13px]">
           <li className="grid grid-cols-[1fr_auto] items-baseline gap-3 px-4 py-2.5">
             <span className="min-w-0 truncate text-ink"><span className="text-accent">ready</span> · fix: release expired claims on the board</span>
             <span className="whitespace-nowrap tabular-nums text-ink-2">+6 −1</span>
           </li>
+          <li className="border-t border-hairline bg-accent-soft px-4 py-2.5 font-medium text-accent">Ready for one human review</li>
+          {UNSOLICITED.slice(0, 7).map((_, i) => (
+            <li key={i} aria-hidden className="border-t border-dashed border-hairline px-4 py-2.5 text-ink-2/45">never reached you</li>
+          ))}
         </ul>
-        <div className="border-t border-hairline bg-accent-soft px-4 py-3 font-mono text-[13px] font-medium text-accent">Ready for one human review</div>
       </div>
-      <p className="mt-4 flex items-baseline gap-2">
-        <span className="font-display text-[44px] font-bold leading-none tracking-[-0.03em] tabular-nums">1</span>
-        <span className="text-sm text-ink-2">pull request, for a task you wrote, already checked. Everything else never reached you.</span>
-      </p>
     </div>
   </div>
 );
