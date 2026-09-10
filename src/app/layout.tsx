@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import Link from "next/link";
 import { Nav } from "@/components/nav";
 import "./globals.css";
 
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="border-t border-hairline">
           <div className="max-w-5xl mx-auto px-6 py-6 font-mono text-xs text-ink-2 flex flex-wrap gap-4 justify-between">
             <span>{name} · free for open source · made by Bunch in Istanbul</span>
-            <span>Identity and permissions come from GitHub. We store no passwords and no code.</span>
+            <span>Identity and permissions come from GitHub. We store no passwords and no code. <Link href="/privacy" className="underline underline-offset-2 hover:text-ink">Privacy</Link></span>
           </div>
         </footer>
       </body>

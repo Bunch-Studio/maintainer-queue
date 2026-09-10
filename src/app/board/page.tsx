@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { StatusDot } from "@/components/status-dot";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { releaseExpiredClaims } from "@/lib/sweep";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +23,8 @@ export const metadata = { title: "Board" };
 
 export default async function Board({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
+  // Expired claims return to the board as people look at it, not only when an agent calls in.
+  await releaseExpiredClaims(createServiceRoleClient()).catch((e: unknown) => console.error("sweep on board:", e));
   const supabase = await createClient();
   const { data } = await supabase
     .from("tasks")

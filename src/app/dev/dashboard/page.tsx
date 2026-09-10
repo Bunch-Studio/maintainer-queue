@@ -10,8 +10,9 @@ export default function DashboardPreview() {
       d={{
         login: "egeoztass",
         repos: [
-          { id: "1", full_name: "egeoztass/mq-smoke", mine: true },
-          { id: "2", full_name: "bluewave-labs/Checkmate", mine: true },
+          { id: "1", full_name: "egeoztass/mq-smoke", mine: true, isPrivate: false },
+          { id: "2", full_name: "bluewave-labs/Checkmate", mine: true, isPrivate: false },
+          { id: "3", full_name: "egeoztass/private-notes", mine: true, isPrivate: true },
         ],
         tasks: [
           { id: "a", title: "greet should trim surrounding whitespace", status: "merged", github_issue_number: 1, repo: "egeoztass/mq-smoke" },

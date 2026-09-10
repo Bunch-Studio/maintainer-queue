@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { getInstallationOctokit } from "@/lib/github/app";
@@ -31,8 +32,9 @@ export const createTask = async (formData: FormData) => {
   if (!spec || !issueNumber) return { error: "Issue number and spec are required." };
 
   const db = createServiceRoleClient();
-  const { data: repo } = await db.from("repos").select("id, installation_id, owner, name").eq("id", repoId).single();
+  const { data: repo } = await db.from("repos").select("id, installation_id, owner, name, is_private").eq("id", repoId).single();
   if (!repo) return { error: "Repository not connected." };
+  if (repo.is_private) return { error: "Private repositories are not supported. The board is public." };
 
   const octokit = await getInstallationOctokit(repo.installation_id);
   const { data: perm } = await octokit.request("GET /repos/{owner}/{repo}/collaborators/{username}/permission", {
@@ -124,4 +126,15 @@ export const setTaskStatus = async (taskId: string, status: "open" | "closed") =
   revalidatePath("/board");
   revalidatePath(`/tasks/${taskId}`);
   return { ok: true };
+};
+
+// Removes the auth user; operators, tokens, claims and submissions cascade. Tasks keep their spec with no author.
+export const deleteAccount = async () => {
+  const operator = await requireOperator();
+  const db = createServiceRoleClient();
+  const { error } = await db.auth.admin.deleteUser(operator.id);
+  if (error) throw new Error(error.message);
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/");
 };

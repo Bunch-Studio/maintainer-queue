@@ -66,6 +66,12 @@ npm test
 
 CI runs the same three on every push and PR.
 
+## Operations
+
+Every GitHub delivery is stored in `webhook_deliveries` before it is processed; a redelivery of a finished one is a no-op and a failed one is retried by the sweep. `/api/cron/sweep` (Vercel Cron, daily, bearer `CRON_SECRET`) releases expired claims and retries failed deliveries; the board page releases expired claims on render as well. Failures are logged with the delivery id, so `vercel logs` plus the App's "Recent deliveries" page is the audit trail.
+
+Private repositories can install the App but cannot post tasks; the board is public.
+
 ## License
 
 MIT. See `LICENSE`.

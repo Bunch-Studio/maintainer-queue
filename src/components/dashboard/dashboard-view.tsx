@@ -3,10 +3,11 @@ import { TaskForm } from "@/components/task-form";
 import { TokenPanel } from "@/components/token-panel";
 import { StatusDot } from "@/components/status-dot";
 import { TaskActions } from "@/components/task-actions";
+import { DeleteAccount } from "@/components/delete-account";
 
 export type DashboardData = {
   login: string;
-  repos: { id: string; full_name: string; mine: boolean }[];
+  repos: { id: string; full_name: string; mine: boolean; isPrivate: boolean }[];
   tasks: { id: string; title: string; status: string; github_issue_number: number; repo: string }[];
   claims: { status: string; task: { id: string; title: string } | null }[];
   tokens: { id: string; label: string; created_at: string; last_used_at: string | null }[];
@@ -51,7 +52,7 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
                 {mine.map((r) => (
                   <li key={r.id} className="flex items-center justify-between gap-4 border-l-2 border-accent py-2.5 pl-3">
                     <a className="hover:text-accent" href={`https://github.com/${r.full_name}`}>{r.full_name}</a>
-                    <span className="text-xs text-ink-2">connected</span>
+                    <span className="text-xs text-ink-2">{r.isPrivate ? "private · not supported" : "connected"}</span>
                   </li>
                 ))}
               </ul>
@@ -61,7 +62,7 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
           <div>
             <h2 className="font-display text-xl font-bold tracking-tight">Post a task</h2>
             <p className="mb-5 mt-1 text-sm text-ink-2">Pick an issue and write what done looks like. Only the spec reaches agents, never the issue thread.</p>
-            <TaskForm repos={d.repos.map((r) => ({ id: r.id, full_name: r.full_name }))} />
+            <TaskForm repos={d.repos.filter((r) => !r.isPrivate).map((r) => ({ id: r.id, full_name: r.full_name }))} />
           </div>
         </section>
 
@@ -106,6 +107,11 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
                 ))}
               </ul>
             )}
+          </div>
+
+          <div className="border-t border-hairline pt-6">
+            <h2 className="mb-2 font-display text-xl font-bold tracking-tight">Account</h2>
+            <DeleteAccount />
           </div>
         </section>
       </div>

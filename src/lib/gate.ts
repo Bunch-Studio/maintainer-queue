@@ -2,6 +2,7 @@ import "server-only";
 import { getInstallationOctokit } from "@/lib/github/app";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { evaluate, revertedPrNumber, type GateCheck } from "@/lib/gate-rules";
+import { must } from "@/lib/db";
 
 export type { GateCheck };
 
@@ -121,7 +122,7 @@ export const runGate = async (githubRepoId: number, pr: PullRequest) => {
 
   // Only the claimer's own PR is recorded; a stranger's PR gets the verdict but no submission.
   if (claim && claimer === pr.user?.login) {
-    await db.from("submissions").upsert(
+    must(await db.from("submissions").upsert(
       {
         task_id: task.id,
         claim_id: claim.id,
@@ -132,10 +133,10 @@ export const runGate = async (githubRepoId: number, pr: PullRequest) => {
         gate_report: checks,
       },
       { onConflict: "task_id,github_pr_number" },
-    );
+    ));
     if (task.status === "claimed") {
-      await db.from("tasks").update({ status: "submitted" }).eq("id", task.id);
-      await db.from("claims").update({ status: "submitted" }).eq("id", claim.id);
+      must(await db.from("tasks").update({ status: "submitted" }).eq("id", task.id));
+      must(await db.from("claims").update({ status: "submitted" }).eq("id", claim.id));
     }
   }
   return { conclusion, checks };
@@ -149,13 +150,10 @@ export const recordMerge = async (githubRepoId: number, pr: PullRequest) => {
     .eq("github_pr_id", Number(pr.id))
     .maybeSingle();
   if (submission) {
-    await db.from("submissions").update({ merged_at: pr.merged_at ?? new Date().toISOString() }).eq("id", submission.id);
-    await db.from("tasks").update({ status: "merged" }).eq("id", submission.task_id);
+    must(await db.from("submissions").update({ merged_at: pr.merged_at ?? new Date().toISOString() }).eq("id", submission.id));
+    must(await db.from("tasks").update({ status: "merged" }).eq("id", submission.task_id));
     const { data: operator } = await db.from("operators").select("merged_count").eq("id", submission.operator_id).single();
-    await db
-      .from("operators")
-      .update({ merged_count: (operator?.merged_count ?? 0) + 1 })
-      .eq("id", submission.operator_id);
+    must(await db.from("operators").update({ merged_count: (operator?.merged_count ?? 0) + 1 }).eq("id", submission.operator_id));
   }
   await recordRevert(githubRepoId, pr);
 };
@@ -173,12 +171,9 @@ const recordRevert = async (githubRepoId: number, pr: PullRequest) => {
     .not("merged_at", "is", null)
     .maybeSingle();
   if (!reverted || reverted.reverted_at) return;
-  await db.from("submissions").update({ reverted_at: pr.merged_at ?? new Date().toISOString() }).eq("id", reverted.id);
+  must(await db.from("submissions").update({ reverted_at: pr.merged_at ?? new Date().toISOString() }).eq("id", reverted.id));
   const { data: operator } = await db.from("operators").select("reverted_count").eq("id", reverted.operator_id).single();
-  await db
-    .from("operators")
-    .update({ reverted_count: (operator?.reverted_count ?? 0) + 1 })
-    .eq("id", reverted.operator_id);
+  must(await db.from("operators").update({ reverted_count: (operator?.reverted_count ?? 0) + 1 }).eq("id", reverted.operator_id));
 };
 
 // A task PR closed without merging puts the task back on the board.
@@ -192,8 +187,8 @@ export const recordClose = async (pr: PullRequest) => {
   if (!submission) return;
   const task = Array.isArray(submission.tasks) ? submission.tasks[0] : submission.tasks;
   if (task?.status !== "submitted") return;
-  await db.from("tasks").update({ status: "open" }).eq("id", submission.task_id);
+  must(await db.from("tasks").update({ status: "open" }).eq("id", submission.task_id));
   if (submission.claim_id) {
-    await db.from("claims").update({ status: "released", released_at: new Date().toISOString() }).eq("id", submission.claim_id);
+    must(await db.from("claims").update({ status: "released", released_at: new Date().toISOString() }).eq("id", submission.claim_id));
   }
 };
