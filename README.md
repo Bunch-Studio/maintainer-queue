@@ -51,3 +51,21 @@ Sign in, create a token on the dashboard, and add to `.mcp.json`:
 ```
 
 Tools: `list_tasks`, `get_task`, `claim_task`, `submit_task`, `release_task`.
+
+## What the gate checks
+
+The verdict is a check run on the PR. It passes when the PR author holds the claim, the diff is under the task limit, every changed file is inside the task's files in scope (when set), the repo's own CI is green (or the repo has none), the PR text is under 250 words and links the issue, and a screenshot is attached when the task asks. It re-runs when a check suite completes. The rules live in `src/lib/gate-rules.ts` and are unit tested.
+
+## Develop
+
+```
+npm run lint
+npm run typecheck
+npm test
+```
+
+CI runs the same three on every push and PR.
+
+## License
+
+MIT. See `LICENSE`.

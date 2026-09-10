@@ -2,13 +2,14 @@ import Link from "next/link";
 import { TaskForm } from "@/components/task-form";
 import { TokenPanel } from "@/components/token-panel";
 import { StatusDot } from "@/components/status-dot";
+import { TaskActions } from "@/components/task-actions";
 
 export type DashboardData = {
   login: string;
   repos: { id: string; full_name: string; mine: boolean }[];
   tasks: { id: string; title: string; status: string; github_issue_number: number; repo: string }[];
   claims: { status: string; task: { id: string; title: string } | null }[];
-  tokenCount: number;
+  tokens: { id: string; label: string; created_at: string; last_used_at: string | null }[];
   mergedCount: number;
   installUrl: string;
   siteUrl: string;
@@ -65,7 +66,7 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
         </section>
 
         <section className="space-y-10">
-          <TokenPanel siteUrl={d.siteUrl} existing={d.tokenCount} />
+          <TokenPanel siteUrl={d.siteUrl} tokens={d.tokens} />
 
           <div>
             <h2 className="mb-3 font-display text-xl font-bold tracking-tight">Tasks you posted</h2>
@@ -74,14 +75,15 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
             ) : (
               <ul className="divide-y divide-hairline border-y border-hairline">
                 {d.tasks.map((t) => (
-                  <li key={t.id} className={`border-l-2 pl-3 ${rail[t.status] ?? "border-ink-2"}`}>
-                    <Link href={`/tasks/${t.id}`} className="row-hover flex justify-between gap-4 py-3 hover:text-accent">
+                  <li key={t.id} className={`flex items-center gap-3 border-l-2 pl-3 ${rail[t.status] ?? "border-ink-2"}`}>
+                    <Link href={`/tasks/${t.id}`} className="row-hover flex min-w-0 flex-1 justify-between gap-4 py-3 hover:text-accent">
                       <span className="min-w-0">
                         <span className="block font-mono text-xs text-ink-2">{t.repo} #{t.github_issue_number}</span>
                         <span className="block truncate">{t.title}</span>
                       </span>
                       <StatusDot status={t.status} />
                     </Link>
+                    <TaskActions taskId={t.id} status={t.status} />
                   </li>
                 ))}
               </ul>

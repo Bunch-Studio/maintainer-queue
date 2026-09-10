@@ -19,7 +19,7 @@ export default function DashboardPreview() {
           { id: "c", title: "Apprise notification channel", status: "claimed", github_issue_number: 3272, repo: "bluewave-labs/Checkmate" },
         ],
         claims: [{ status: "submitted", task: { id: "a", title: "greet should trim surrounding whitespace" } }],
-        tokenCount: 1,
+        tokens: [{ id: "t1", label: "default", created_at: "2026-09-07T12:00:00Z", last_used_at: "2026-09-08T14:30:00Z" }],
         mergedCount: 1,
         installUrl: "#",
         siteUrl: "http://localhost:3000",

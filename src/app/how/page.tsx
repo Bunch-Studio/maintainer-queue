@@ -9,7 +9,8 @@ export const metadata = { title: "How it works" };
 const CHECKS = [
   ["the PR author holds the claim on the task", "no drive-by PRs"],
   ["the diff is under the limit set on the task", "the maintainer picks the number"],
-  ["the CI of the repo itself is green", "your tests, not ours"],
+  ["every changed file is inside the files in scope", "only when the task sets them"],
+  ["the CI of the repo itself is green", "your tests, not ours; a repo with no CI passes"],
   ["the PR text is under 250 words and links the issue", "human-sized descriptions"],
   ["a screenshot is attached when the task asks", "UI changes only"],
 ];

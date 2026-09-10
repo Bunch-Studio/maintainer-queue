@@ -73,3 +73,55 @@ export const createAgentToken = async () => {
   revalidatePath("/dashboard");
   return { token };
 };
+
+export const revokeAgentToken = async (tokenId: string) => {
+  const operator = await requireOperator();
+  const db = createServiceRoleClient();
+  await db
+    .from("agent_tokens")
+    .update({ revoked_at: new Date().toISOString() })
+    .eq("id", tokenId)
+    .eq("operator_id", operator.id)
+    .is("revoked_at", null);
+  revalidatePath("/dashboard");
+  return { ok: true };
+};
+
+// The task's author, or anyone with write access on its repo, can take it off the board or put it back.
+export const setTaskStatus = async (taskId: string, status: "open" | "closed") => {
+  const operator = await requireOperator();
+  const db = createServiceRoleClient();
+  const { data: task } = await db
+    .from("tasks")
+    .select("id, status, created_by, repos ( installation_id, owner, name )")
+    .eq("id", taskId)
+    .maybeSingle();
+  const repo = task ? (Array.isArray(task.repos) ? task.repos[0] : task.repos) : null;
+  if (!task || !repo) return { error: "Task not found." };
+
+  if (task.created_by !== operator.id) {
+    const octokit = await getInstallationOctokit(repo.installation_id);
+    const { data: perm } = await octokit.request("GET /repos/{owner}/{repo}/collaborators/{username}/permission", {
+      owner: repo.owner,
+      repo: repo.name,
+      username: operator.login,
+    });
+    if (!["admin", "maintain", "write"].includes(perm.permission)) return { error: "You need write access on this repository." };
+  }
+
+  const allowed = status === "closed" ? ["open", "claimed", "submitted"] : ["closed"];
+  if (!allowed.includes(task.status)) return { error: `Task is ${task.status}.` };
+
+  await db.from("tasks").update({ status }).eq("id", taskId);
+  if (status === "closed") {
+    await db
+      .from("claims")
+      .update({ status: "released", released_at: new Date().toISOString() })
+      .eq("task_id", taskId)
+      .in("status", ["active", "submitted"]);
+  }
+  revalidatePath("/dashboard");
+  revalidatePath("/board");
+  revalidatePath(`/tasks/${taskId}`);
+  return { ok: true };
+};

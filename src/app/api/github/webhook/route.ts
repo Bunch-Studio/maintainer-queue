@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getGitHubApp, getInstallationOctokit } from "@/lib/github/app";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { recordMerge, runGate } from "@/lib/gate";
+import { recordClose, recordMerge, runGate } from "@/lib/gate";
 
 type RepoPayload = { id: number; name: string; full_name: string; private: boolean };
 
@@ -58,8 +58,9 @@ export const POST = async (request: NextRequest) => {
     const repoId = body.repository.id as number;
     if (["opened", "synchronize", "reopened", "edited", "ready_for_review"].includes(body.action)) {
       await runGate(repoId, body.pull_request);
-    } else if (body.action === "closed" && body.pull_request.merged) {
-      await recordMerge(repoId, body.pull_request);
+    } else if (body.action === "closed") {
+      if (body.pull_request.merged) await recordMerge(repoId, body.pull_request);
+      else await recordClose(body.pull_request);
     }
   }
 

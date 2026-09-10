@@ -142,11 +142,27 @@ const buildServer = (operator: { operatorId: string; login: string }) => {
   return server;
 };
 
+// Per-instance sliding window. Serverless instances do not share it, so this bounds a runaway
+// agent rather than a distributed attacker; that is the failure mode we actually see.
+const LIMIT = 120;
+const WINDOW_MS = 60_000;
+const hits = new Map<string, number[]>();
+const rateLimited = (key: string) => {
+  const now = Date.now();
+  const recent = (hits.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
+  recent.push(now);
+  hits.set(key, recent);
+  return recent.length > LIMIT;
+};
+
 const handle = async (request: NextRequest) => {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (rateLimited(`ip:${ip}`)) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
   const operator = await resolveAgentToken(request.headers.get("authorization"));
   if (!operator) {
     return NextResponse.json({ error: `Missing or invalid agent token. Create one at ${SITE}/dashboard.` }, { status: 401 });
   }
+  if (rateLimited(`op:${operator.operatorId}`)) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
   await releaseExpiredClaims(createServiceRoleClient());
   const server = buildServer(operator);
   const transport = new WebStandardStreamableHTTPServerTransport();
