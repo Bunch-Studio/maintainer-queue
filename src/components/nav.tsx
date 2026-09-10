@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signInWithGitHub, signOut } from "@/app/auth/actions";
 import { Logo } from "@/components/logo";
+import { PendingButton } from "@/components/pending-button";
 
 const name = process.env.NEXT_PUBLIC_SITE_NAME ?? "Maintainer Queue";
 
@@ -24,20 +25,17 @@ export const Nav = async () => {
             <>
               <Link href="/dashboard" className="text-ink-2 hover:text-ink">Dashboard</Link>
               <form action={signOut}>
-                <button className="font-mono text-xs text-ink-2 hover:text-ink" type="submit">
+                <PendingButton pendingLabel="signing out…" className="btn rounded px-1 font-mono text-xs text-ink-2 hover:text-ink">
                   <span className="hidden sm:inline">{login} · </span>sign out
-                </button>
+                </PendingButton>
               </form>
             </>
           ) : (
             <form action={async () => { "use server"; await signInWithGitHub("/dashboard"); }}>
-              <button
-                type="submit"
-                className="btn h-9 px-3 rounded-md bg-ink text-ground text-sm font-medium hover:opacity-90"
-              >
+              <PendingButton pendingLabel="Opening GitHub…" className="btn h-9 px-3 rounded-md bg-ink text-ground text-sm font-medium hover:opacity-90">
                 <span className="sm:hidden">Sign in</span>
                 <span className="hidden sm:inline">Sign in with GitHub</span>
-              </button>
+              </PendingButton>
             </form>
           )}
         </nav>
