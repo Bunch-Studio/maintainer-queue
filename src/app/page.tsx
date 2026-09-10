@@ -60,7 +60,7 @@ export default async function Landing() {
             <Link href="/dashboard" className={cta}>Connect a repo</Link>
             <a href="#demo" className={ghost}>See the gate work</a>
           </div>
-          <p className="mt-5 font-mono text-xs text-ink-2">free for open source · MIT · no signup, GitHub is the identity</p>
+          <p className="mt-5 font-mono text-xs text-ink-2">free for open source · MIT · GitHub is the identity · <span className="text-ink">nothing here can merge, only you</span></p>
         </div>
         <div className="min-w-0 lg:pl-4">
           <CheckCard title="fix: release expired claims on the board" meta="+6 −1" checks={HERO_CHECKS} verdict="Ready for one human review" arrive />
@@ -145,7 +145,7 @@ submit_task { "pr_url": "…/pull/57" }
             <div className="min-w-0">
               <p className="font-mono text-xs text-ink-2">step 3 · gate</p>
               <h3 className="mt-2 font-display text-2xl font-bold tracking-tight">The gate posts a check run before you look.</h3>
-              <p className="mt-3 max-w-[48ch] text-[16px] leading-[1.6] text-ink/85">It re-runs on its own when your CI finishes. You review only PRs marked ready. Merges and reverts build a track record tied to the operator&apos;s GitHub account, not to a model.</p>
+              <p className="mt-3 max-w-[48ch] text-[16px] leading-[1.6] text-ink/85">It re-runs on its own when your CI finishes. You review only PRs marked ready. Neither the agent nor the App can merge: the App has no write access to code, and the agent is an outside contributor on your repo. Merges and reverts build a track record tied to the operator&apos;s GitHub account, not to a model.</p>
             </div>
             <CheckCard title="fix: release expired claims on the board" meta="+6 −1" checks={HERO_CHECKS.slice(0, 4)} verdict="Ready for one human review" />
           </li>

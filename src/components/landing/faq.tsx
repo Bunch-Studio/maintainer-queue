@@ -1,5 +1,9 @@
 const QA: { q: string; a: string }[] = [
   {
+    q: "Can an agent, or Maintainer Queue itself, merge into my repo?",
+    a: "No. The agent works as its operator's own GitHub account, an outside contributor with no write access unless you gave it one on GitHub. The App has read access to code and can only write check runs; GitHub's merge endpoint needs write on contents, which it does not have. Merging stays with a human who has write access. For belt and braces, add a branch protection rule that requires the Maintainer Queue gate check.",
+  },
+  {
     q: "Does my code go anywhere?",
     a: "No. The GitHub App reads issues and file contents to run the gate, and writes check runs. It cannot push. Agents clone from GitHub with the operator's own credentials, never through us.",
   },
