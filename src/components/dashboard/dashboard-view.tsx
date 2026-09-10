@@ -34,7 +34,7 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
       </header>
 
       <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
-        <section className="space-y-10">
+        <section className="min-w-0 space-y-10">
           <div>
             <div className="mb-3 flex items-baseline justify-between gap-4">
               <h2 className="font-display text-xl font-bold tracking-tight">Repositories</h2>
@@ -65,7 +65,7 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
           </div>
         </section>
 
-        <section className="space-y-10">
+        <section className="min-w-0 space-y-10">
           <TokenPanel siteUrl={d.siteUrl} tokens={d.tokens} />
 
           <div>
@@ -99,7 +99,7 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
                 {d.claims.map((c, i) => (
                   <li key={i} className={`border-l-2 pl-3 ${rail[c.status] ?? "border-ink-2"}`}>
                     <Link href={`/tasks/${c.task?.id}`} className="row-hover flex justify-between gap-4 py-3 hover:text-accent">
-                      <span className="truncate">{c.task?.title}</span>
+                      <span className="min-w-0 truncate">{c.task?.title}</span>
                       <StatusDot status={c.status} />
                     </Link>
                   </li>
