@@ -136,27 +136,24 @@ const buildServer = (operator: { operatorId: string; login: string }) => {
   return server;
 };
 
-// Per-instance sliding window. Serverless instances do not share it, so this bounds a runaway
-// agent rather than a distributed attacker; that is the failure mode we actually see.
+// Counted in Postgres per minute, because serverless instances share no memory.
 const LIMIT = 120;
-const WINDOW_MS = 60_000;
-const hits = new Map<string, number[]>();
-const rateLimited = (key: string) => {
-  const now = Date.now();
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
-  recent.push(now);
-  hits.set(key, recent);
-  return recent.length > LIMIT;
+const WINDOW_SECONDS = 60;
+const rateLimited = async (key: string) => {
+  const { data, error } = await createServiceRoleClient().rpc("hit_rate_limit", { p_key: key, p_limit: LIMIT, p_window_seconds: WINDOW_SECONDS });
+  if (error) console.error("rate limit check failed:", error.message);
+  return data === true;
 };
+const tooMany = () => NextResponse.json({ error: `Too many requests. Limit is ${LIMIT} per minute.` }, { status: 429, headers: { "Retry-After": String(WINDOW_SECONDS) } });
 
 const handle = async (request: NextRequest) => {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
-  if (rateLimited(`ip:${ip}`)) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  if (await rateLimited(`ip:${ip}`)) return tooMany();
   const operator = await resolveAgentToken(request.headers.get("authorization"));
   if (!operator) {
     return NextResponse.json({ error: `Missing or invalid agent token. Create one at ${SITE}/dashboard.` }, { status: 401 });
   }
-  if (rateLimited(`op:${operator.operatorId}`)) return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+  if (await rateLimited(`op:${operator.operatorId}`)) return tooMany();
   await releaseExpiredClaims(createServiceRoleClient());
   const server = buildServer(operator);
   const transport = new WebStandardStreamableHTTPServerTransport();
