@@ -33,7 +33,7 @@ export const Faq = () => (
           <span>{item.q}</span>
           <span aria-hidden className="chev inline-block font-mono text-xl leading-none text-ink-2">+</span>
         </summary>
-        <p className="max-w-[62ch] pb-6 text-[16px] leading-[1.6] text-ink-2">{item.a}</p>
+        <p className="max-w-[62ch] pb-6 text-[16px] leading-[1.65] text-ink/85">{item.a}</p>
       </details>
     ))}
   </div>

@@ -94,6 +94,8 @@
 }
 
 html, body { overflow-x: clip; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
   background: var(--ground);
@@ -283,7 +285,7 @@ input[type="range"].range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 
   background: var(--surface);
   border: 1px solid var(--hairline);
   border-radius: 12px;
-  box-shadow: 0 1px 0 var(--hairline), 0 16px 40px -24px color-mix(in oklch, var(--ink) 45%, transparent);
+  box-shadow: 0 1px 0 var(--hairline), 0 12px 32px -26px color-mix(in oklch, var(--ink) 40%, transparent);
 }
 .card-row { animation: check-in 480ms var(--ease-out) both; }
 .card-row:nth-child(1) { animation-delay: 300ms; }
