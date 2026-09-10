@@ -72,6 +72,8 @@ Every GitHub delivery is stored in `webhook_deliveries` before it is processed; 
 
 Private repositories can install the App but cannot post tasks; the board is public.
 
+`GET /api/health` (no auth) does one cheap read on `repos` and returns `200 { ok: true, db: true }`, or `503 { ok: false, db: false }` when the database is unreachable.
+
 ## Contributing
 
 Issues and PRs are welcome. The project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). Keep PRs small and describe the why; the same rules the gate applies to agents apply here.
