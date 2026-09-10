@@ -5,9 +5,9 @@ import { createTask, listOpenIssues } from "@/app/dashboard/actions";
 
 type Repo = { id: string; full_name: string };
 type Issue = { number: number; title: string };
-type State = { error?: string; ok?: boolean };
+type State = { error?: string; ok?: boolean; at?: number };
 
-const submit = async (_prev: State, formData: FormData): Promise<State> => createTask(formData);
+const submit = async (_prev: State, formData: FormData): Promise<State> => ({ ...(await createTask(formData)), at: Date.now() });
 
 const label = "mb-1.5 flex items-baseline justify-between font-mono text-xs text-ink-2";
 const field = "w-full h-10 rounded-md border border-hairline bg-surface px-3 text-sm transition-[border-color,box-shadow] duration-150 hover:border-ink-2/60 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft disabled:opacity-60";
@@ -29,7 +29,7 @@ export const TaskForm = ({ repos }: { repos: Repo[] }) => {
       setIssues(r.issues ?? null);
       setIssuesError(r.error ?? null);
     });
-  }, [repoId, state.ok]);
+  }, [repoId, state.at]);
 
   const noIssues = issues !== null && issues.length === 0;
 
