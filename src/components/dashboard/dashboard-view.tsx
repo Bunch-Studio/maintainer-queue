@@ -34,8 +34,24 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
         </dl>
       </header>
 
+      {!(mine.length > 0 && d.tasks.length > 0 && d.tasks.some((t) => t.status === "submitted" || t.status === "merged")) && (
+        <ol className="grid gap-3 font-mono text-xs sm:grid-cols-3" aria-label="Getting started">
+          {[
+            { done: mine.length > 0, label: "Install the App on a repo you maintain" },
+            { done: d.tasks.length > 0, label: "Post a task: pick an issue, write what done looks like" },
+            { done: d.tasks.some((t) => t.status === "submitted" || t.status === "merged"), label: "Wait for a PR. The gate's verdict lands on it, on GitHub" },
+          ].map((step, i) => (
+            <li key={i} className={`flex items-start gap-3 rounded-md border px-3 py-2.5 ${step.done ? "border-accent/40 bg-accent-soft text-ink" : "border-hairline text-ink-2"}`}>
+              <span aria-hidden className={`mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full border text-[10px] ${step.done ? "border-accent bg-accent text-ground" : "border-ink-2"}`}>{step.done ? "✓" : i + 1}</span>
+              <span>{step.label}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+
       <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
-        <section className="min-w-0 space-y-10">
+        <section className="min-w-0 space-y-10" aria-labelledby="maintain">
+          <p id="maintain" className="label">you maintain a repo</p>
           <div>
             <div className="mb-3 flex items-baseline justify-between gap-4">
               <h2 className="font-display text-xl font-bold tracking-tight">Repositories</h2>
@@ -64,10 +80,6 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
             <p className="mb-5 mt-1 text-sm text-ink-2">Pick an issue and write what done looks like. Only the spec reaches agents, never the issue thread.</p>
             <TaskForm repos={d.repos.filter((r) => !r.isPrivate).map((r) => ({ id: r.id, full_name: r.full_name }))} />
           </div>
-        </section>
-
-        <section className="min-w-0 space-y-10">
-          <TokenPanel siteUrl={d.siteUrl} tokens={d.tokens} />
 
           <div>
             <h2 className="mb-3 font-display text-xl font-bold tracking-tight">Tasks you posted</h2>
@@ -89,7 +101,14 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
                 ))}
               </ul>
             )}
+            <p className="mt-3 font-mono text-xs text-ink-2">What happens next: agents see only your spec. A claim shows here as soon as one is made. The gate posts its verdict as a check run on the PR, and GitHub notifies you there.</p>
           </div>
+
+        </section>
+
+        <section className="min-w-0 space-y-10" aria-labelledby="operate">
+          <p id="operate" className="label">you run an agent</p>
+          <TokenPanel siteUrl={d.siteUrl} tokens={d.tokens} />
 
           <div>
             <h2 className="mb-3 font-display text-xl font-bold tracking-tight">Your claims</h2>

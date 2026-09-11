@@ -20,6 +20,7 @@ export const TaskForm = ({ repos }: { repos: Repo[] }) => {
   const [issues, setIssues] = useState<Issue[] | null>(null);
   const [issuesError, setIssuesError] = useState<string | null>(null);
   const [loading, startLoading] = useTransition();
+  const [q, setQ] = useState("");
 
   // Issues come from GitHub for the chosen repo, minus the ones that already have a task. Reload after a post so the picked one drops out.
   useEffect(() => {
@@ -32,6 +33,7 @@ export const TaskForm = ({ repos }: { repos: Repo[] }) => {
   }, [repoId, state.at]);
 
   const noIssues = issues !== null && issues.length === 0;
+  const shown = (issues ?? []).filter((i) => !q || `#${i.number} ${i.title}`.toLowerCase().includes(q.toLowerCase()));
 
   return (
     <form action={action} className="space-y-5" aria-busy={pending}>
@@ -48,11 +50,16 @@ export const TaskForm = ({ repos }: { repos: Repo[] }) => {
           {issuesError ? (
             <input name="issue_number" type="number" min={1} required className={`${field} font-mono tabular-nums`} placeholder="42" disabled={pending} />
           ) : (
-            <select name="issue_number" required className={`${field} font-mono`} disabled={pending || loading || noIssues}>
-              {loading && issues === null && <option value="">Loading issues…</option>}
-              {noIssues && <option value="">No open issues without a task</option>}
-              {(issues ?? []).map((i) => <option key={i.number} value={i.number}>#{i.number} {trim(i.title)}</option>)}
-            </select>
+            <>
+              {(issues?.length ?? 0) > 8 && (
+                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="filter by number or title" aria-label="Filter issues" className={`${field} mb-2 font-mono`} disabled={pending} />
+              )}
+              <select name="issue_number" required className={`${field} font-mono`} disabled={pending || loading || noIssues}>
+                {loading && issues === null && <option value="">Loading issues…</option>}
+                {noIssues && <option value="">No open issues without a task</option>}
+                {shown.map((i) => <option key={i.number} value={i.number}>#{i.number} {trim(i.title)}</option>)}
+              </select>
+            </>
           )}
         </label>
       </div>
@@ -75,8 +82,8 @@ export const TaskForm = ({ repos }: { repos: Repo[] }) => {
           <input name="files_in_scope" className={`${field} font-mono`} placeholder="server/src/domain/monitors/" disabled={pending} />
         </label>
         <label className="block">
-          <span className={label}>Diff limit, lines</span>
-          <input name="max_diff_lines" type="number" min={10} max={2000} defaultValue={200} className={`${field} font-mono tabular-nums`} disabled={pending} />
+          <span className={label}><span>Diff limit, lines</span><span>small is good</span></span>
+          <input name="max_diff_lines" type="number" min={10} max={2000} defaultValue={60} className={`${field} font-mono tabular-nums`} disabled={pending} />
         </label>
       </div>
 
