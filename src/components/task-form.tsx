@@ -76,7 +76,7 @@ export const TaskForm = ({ repos }: { repos: Repo[] }) => {
         />
       </label>
 
-      <div className="grid gap-4 sm:grid-cols-[1fr_150px]">
+      <div className="grid gap-4 sm:grid-cols-[1fr_200px]">
         <label className="block">
           <span className={label}><span>Files in scope</span><span>optional, comma separated</span></span>
           <input name="files_in_scope" className={`${field} font-mono`} placeholder="server/src/domain/monitors/" disabled={pending} />
