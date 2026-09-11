@@ -127,13 +127,13 @@ export const DashboardView = ({ d }: { d: DashboardData }) => {
               </ul>
             )}
           </div>
-
-          <div className="border-t border-hairline pt-6">
-            <h2 className="mb-2 font-display text-xl font-bold tracking-tight">Account</h2>
-            <DeleteAccount />
-          </div>
         </section>
       </div>
+
+      <footer className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-hairline pt-5 font-mono text-xs text-ink-2" aria-label="Account">
+        <p>Signed in as <span className="text-ink">{d.login}</span> through GitHub. We store no passwords and no code.</p>
+        <DeleteAccount />
+      </footer>
     </div>
   );
 };
