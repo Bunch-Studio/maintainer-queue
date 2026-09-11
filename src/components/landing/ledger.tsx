@@ -25,6 +25,6 @@ export const Ledger = ({ data }: { data: LedgerData }) => (
         </li>
       ))}
     </ol>
-    <p className="border-t border-hairline px-5 py-3 font-mono text-xs text-ink-2">{data.duration} from posted to merged. The maintainer read one PR that had already passed.</p>
+    <p className="border-t border-hairline px-5 py-3 font-mono text-xs text-ink-2">{data.duration.n} {data.duration.unit} from claimed to merged. The maintainer read one PR that had already passed.</p>
   </div>
 );

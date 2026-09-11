@@ -21,9 +21,9 @@ const HERO_CHECKS = [
   { name: "PR text is short and links the task", ok: true, detail: "64 words · Fixes #14" },
 ];
 
-const stats = (merged: number, duration: string) => [
+const stats = (merged: number, duration: { n: string; unit: string }) => [
   { n: String(merged), unit: merged === 1 ? "PR merged" : "PRs merged", what: "through the queue, each read by one human after the gate had already passed." },
-  { n: duration, unit: "min", what: "from the latest task being posted to its PR merged, with the gate doing the first pass." },
+  { n: duration.n, unit: duration.unit, what: "from the latest task being claimed to its PR merged, with the gate doing the first pass." },
   { n: "0", unit: "unsolicited", what: "pull requests reach a maintainer. Nothing moves without a task they posted." },
 ];
 

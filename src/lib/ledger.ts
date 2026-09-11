@@ -1,13 +1,20 @@
 import { createClient } from "@/lib/supabase/server";
 
 export type LedgerEvent = { t: string; who: "maintainer" | "agent" | "gate" | "maintainer"; what: string; detail: string; final?: boolean };
-export type LedgerData = { date: string; duration: string; events: LedgerEvent[]; mergedCount: number };
+export type LedgerData = { date: string; duration: { n: string; unit: string }; events: LedgerEvent[]; mergedCount: number };
 
 type Check = { name: string; ok: boolean | null; detail: string };
 const one = <T,>(v: T | T[] | null | undefined): T | null => (Array.isArray(v) ? v[0] ?? null : v ?? null);
 
 const clock = (iso: string) => new Date(iso).toISOString().slice(11, 19);
-const mmss = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, "0")}`;
+const two = (n: number) => String(n).padStart(2, "0");
+// Under an hour reads as m:ss min, under a day as h:mm h, beyond that as days.
+export const span = (ms: number) => {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  if (s < 3600) return { n: `${Math.floor(s / 60)}:${two(s % 60)}`, unit: "min" };
+  if (s < 86400) return { n: `${Math.floor(s / 3600)}:${two(Math.floor((s % 3600) / 60))}`, unit: "h" };
+  return { n: (s / 86400).toFixed(1).replace(/\.0$/, ""), unit: "days" };
+};
 const day = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
 const short = (checks: Check[]) =>
@@ -55,7 +62,7 @@ export const loadLedger = async (): Promise<LedgerData | null> => {
 
   return {
     date: day(task.created_at),
-    duration: mmss(new Date(s.merged_at).getTime() - new Date(task.created_at).getTime()),
+    duration: span(new Date(s.merged_at).getTime() - new Date(claim?.claimed_at ?? s.submitted_at).getTime()),
     events,
     mergedCount: count ?? 0,
   };
