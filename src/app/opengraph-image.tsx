@@ -45,11 +45,10 @@ export default async function Image() {
     (
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#faf9f6", color: ink, padding: "52px 64px", fontFamily: "Sans" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 24, color: ink }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 32, height: 32, padding: 7, borderRadius: 8, background: ink }}>
-            <div style={{ height: 4, borderRadius: 2, background: "#faf9f6", opacity: 0.55 }} />
-            <div style={{ height: 4, borderRadius: 2, background: "#faf9f6", opacity: 0.55 }} />
-            <div style={{ height: 4, borderRadius: 2, background: "#4fc27f" }} />
-          </div>
+          <svg width="36" height="36" viewBox="0 0 32 32" fill="none" strokeWidth="5" strokeLinecap="round">
+            <circle cx="15" cy="15" r="9.5" stroke={ink} />
+            <path d="M20.7 20.7 27.2 27.2" stroke={green} />
+          </svg>
           Maintainer Queue
         </div>
 
