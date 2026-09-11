@@ -1,7 +1,7 @@
 import "server-only";
 import { getInstallationOctokit } from "@/lib/github/app";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
-import { evaluate, revertedPrNumber, type GateCheck } from "@/lib/gate-rules";
+import { evaluate, issueNumberFromBody, revertedPrNumber, type GateCheck } from "@/lib/gate-rules";
 import { must } from "@/lib/db";
 
 export type { GateCheck };
@@ -23,11 +23,6 @@ type PullRequest = {
 
 type Octokit = Awaited<ReturnType<typeof getInstallationOctokit>>;
 type RepoRef = { owner: string; repo: string };
-
-const issueNumberFromBody = (body: string | null) => {
-  const match = body?.match(/(?:fixes|closes|resolves)\s+#(\d+)/i);
-  return match ? Number(match[1]) : null;
-};
 
 const listChangedFiles = async (octokit: Octokit, ref: RepoRef, pullNumber: number) => {
   const files: string[] = [];

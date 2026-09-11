@@ -92,3 +92,9 @@ export const revertedPrNumber = (body: string | null) => {
   const match = body?.match(/\bReverts\s+(?:[\w.-]+\/[\w.-]+)?#(\d+)/i);
   return match ? Number(match[1]) : null;
 };
+
+// A PR links its task with a GitHub closing keyword: "Fixes #1", "closes: #2", "Resolves #3".
+export const issueNumberFromBody = (body: string | null) => {
+  const match = body?.match(/(?:fixes|closes|resolves):?\s+#(\d+)/i);
+  return match ? Number(match[1]) : null;
+};

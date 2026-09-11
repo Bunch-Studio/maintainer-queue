@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { evaluate, inScope, revertedPrNumber, type GateInput } from "./gate-rules.ts";
+import { evaluate, inScope, issueNumberFromBody, revertedPrNumber, type GateInput } from "./gate-rules.ts";
 
 const green = { status: "completed", conclusion: "success" };
 
@@ -110,5 +110,18 @@ describe("revertedPrNumber", () => {
     assert.equal(revertedPrNumber("This reverts #12 because"), 12);
     assert.equal(revertedPrNumber("Fixes #3"), null);
     assert.equal(revertedPrNumber(null), null);
+  });
+});
+
+describe("issueNumberFromBody", () => {
+  it("reads a closing keyword in any case, with or without a colon", () => {
+    assert.equal(issueNumberFromBody("Trim the name.\n\nFixes #1"), 1);
+    assert.equal(issueNumberFromBody("closes: #2"), 2);
+    assert.equal(issueNumberFromBody("Resolves #3"), 3);
+    assert.equal(issueNumberFromBody("fIxEs #5"), 5);
+  });
+  it("ignores a bare issue number and an empty body", () => {
+    assert.equal(issueNumberFromBody("See #4"), null);
+    assert.equal(issueNumberFromBody(null), null);
   });
 });
