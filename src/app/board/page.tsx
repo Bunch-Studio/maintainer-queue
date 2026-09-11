@@ -21,17 +21,18 @@ const repoName = (r: Row["repos"]) => (Array.isArray(r) ? r[0]?.full_name : r?.f
 
 export const metadata = { title: "Board" };
 
-export default async function Board({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const { error } = await searchParams;
+export default async function Board({ searchParams }: { searchParams: Promise<{ error?: string; repo?: string }> }) {
+  const { error, repo } = await searchParams;
   // Expired claims return to the board as people look at it, not only when an agent calls in.
   await releaseExpiredClaims(createServiceRoleClient()).catch((e: unknown) => console.error("sweep on board:", e));
   const supabase = await createClient();
-  const { data } = await supabase
+  const query = supabase
     .from("tasks")
-    .select("id, title, status, max_diff_lines, requires_screenshot, github_issue_number, created_at, repos ( full_name )")
+    .select("id, title, status, max_diff_lines, requires_screenshot, github_issue_number, created_at, repos!inner ( full_name )")
     .in("status", ["open", "claimed", "submitted"])
     .order("created_at", { ascending: false })
     .limit(100);
+  const { data } = await (repo ? query.eq("repos.full_name", repo) : query);
   const tasks = (data ?? []) as Row[];
   const { count: repoCount } = await supabase.from("repos").select("id", { count: "exact", head: true }).eq("active", true);
 
@@ -47,6 +48,11 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
         <p className="text-ink-2 max-w-prose mb-8">
           Every row is a spec written by someone with write access to the repo. Claim one with your agent, open a PR, and the gate checks it before a human looks.
         </p>
+        {repo && (
+          <p className="font-mono text-xs text-ink-2 mb-3">
+            showing {repo} · <Link href="/board" className="text-accent underline underline-offset-2">clear</Link>
+          </p>
+        )}
 
         {tasks.length === 0 ? (
           <div className="border border-dashed border-hairline rounded-md p-8 text-center">
@@ -56,17 +62,17 @@ export default async function Board({ searchParams }: { searchParams: Promise<{ 
         ) : (
           <ul className="divide-y divide-hairline border-y border-hairline">
             {tasks.map((t) => (
-              <li key={t.id}>
-                <Link href={`/tasks/${t.id}`} className={`row-hover grid sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 py-4 hover:bg-surface -mx-3 px-3 rounded-sm border-l-2 ${t.status === "open" ? "border-accent" : "border-pending"}`}>
-                  <div className="min-w-0">
-                    <div className="font-mono text-xs text-ink-2 mb-1">{repoName(t.repos)} #{t.github_issue_number}</div>
-                    <div className="font-medium">{t.title}</div>
+              <li key={t.id} className={`row-hover grid sm:grid-cols-[1fr_auto] gap-2 sm:gap-4 py-4 hover:bg-surface -mx-3 px-3 rounded-sm border-l-2 ${t.status === "open" ? "border-accent" : "border-pending"}`}>
+                <div className="min-w-0">
+                  <div className="font-mono text-xs text-ink-2 mb-1">
+                    <Link href={`/board?repo=${repoName(t.repos)}`} className="relative z-10 hover:underline">{repoName(t.repos)}</Link> #{t.github_issue_number}
                   </div>
-                  <div className="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-1 font-mono text-xs text-ink-2 tabular-nums whitespace-nowrap">
-                    <StatusDot status={t.status} />
-                    <span>≤ {t.max_diff_lines} lines{t.requires_screenshot ? " · screenshot" : ""}</span>
-                  </div>
-                </Link>
+                  <Link href={`/tasks/${t.id}`} className="font-medium after:absolute after:inset-0">{t.title}</Link>
+                </div>
+                <div className="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-1 font-mono text-xs text-ink-2 tabular-nums whitespace-nowrap">
+                  <StatusDot status={t.status} />
+                  <span>≤ {t.max_diff_lines} lines{t.requires_screenshot ? " · screenshot" : ""}</span>
+                </div>
               </li>
             ))}
           </ul>
